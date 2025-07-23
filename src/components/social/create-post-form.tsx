@@ -1,7 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
-import { useEffect, useRef } from 'react';
+import { useActionState, useEffect, useRef } from 'react';
+import { useFormStatus } from 'react-dom';
 import { createPostAction } from '@/app/actions';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -27,7 +27,7 @@ function SubmitButton() {
 
 export function CreatePostForm() {
   const initialState = { message: null, errors: {}, success: false };
-  const [state, dispatch] = useFormState(createPostAction, initialState);
+  const [state, dispatch] = useActionState(createPostAction, initialState);
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
 
