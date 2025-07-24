@@ -16,7 +16,7 @@ function SubmitButton() {
     <Button
       type="submit"
       size="sm"
-      className="bg-gradient-to-br from-purple-500 to-pink-500 text-white"
+      className="bg-[#8A2BE2] text-white hover:bg-[#7f26d1]"
       disabled={pending}
     >
       <Send className="mr-2 h-4 w-4" />

@@ -59,7 +59,7 @@ export default function DiscoverPage() {
                       <p className="font-semibold">{user.name}</p>
                       <p className="text-sm text-muted-foreground">@{user.handle}</p>
                     </div>
-                    <Button size="sm" className="bg-gradient-to-br from-purple-500 to-pink-500 text-white">
+                    <Button size="sm" className="bg-[#8A2BE2] text-white hover:bg-[#7f26d1]">
                         <Plus className="h-4 w-4 mr-2" /> Follow
                     </Button>
                   </li>

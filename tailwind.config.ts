@@ -11,7 +11,7 @@ export default {
     extend: {
       fontFamily: {
         body: ['Inter', 'sans-serif'],
-        headline: ['Nunito', 'sans-serif'],
+        headline: ['Source Serif Pro', 'serif'],
         code: ['monospace'],
       },
       colors: {

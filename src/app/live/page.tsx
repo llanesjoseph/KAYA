@@ -13,7 +13,7 @@ export default function LivePage() {
         <main className="flex flex-col bg-black">
           <div className="flex-1 flex items-center justify-center text-white">
             <div className="text-center">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-4">
+              <div className="w-24 h-24 rounded-full bg-[#8A2BE2] flex items-center justify-center mx-auto mb-4">
                  <Heart className="w-12 h-12 text-white" />
               </div>
               <h1 className="font-headline text-3xl font-bold">Live Stream Offline</h1>
@@ -22,7 +22,7 @@ export default function LivePage() {
           </div>
           <div className="p-4 bg-gray-900/50 text-white">
             <div className='flex items-center gap-4'>
-                <Avatar className="h-16 w-16 border-4 border-pink-500">
+                <Avatar className="h-16 w-16 border-4 border-[#8A2BE2]">
                     <AvatarImage src="https://placehold.co/128x128" data-ai-hint="user avatar" />
                     <AvatarFallback>LS</AvatarFallback>
                 </Avatar>
@@ -30,7 +30,7 @@ export default function LivePage() {
                     <h2 className="font-headline text-xl font-bold">Live with Next.js</h2>
                     <p className="text-sm">with @livestreamer</p>
                 </div>
-                <Button className="ml-auto bg-gradient-to-br from-purple-500 to-pink-500 text-white">
+                <Button className="ml-auto bg-[#8A2BE2] text-white hover:bg-[#7f26d1]">
                     Subscribe
                 </Button>
             </div>

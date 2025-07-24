@@ -36,7 +36,7 @@ export default function ProfilePage() {
                   <h1 className="font-headline text-3xl font-bold">Kaya User</h1>
                   <p className="text-muted-foreground">@kayauser</p>
                 </div>
-                <Button className="bg-gradient-to-br from-purple-500 to-pink-500 text-white">
+                <Button className="bg-[#8A2BE2] text-white hover:bg-[#7f26d1]">
                   Edit Profile
                 </Button>
               </div>
