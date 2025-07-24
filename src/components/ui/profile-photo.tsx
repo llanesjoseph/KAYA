@@ -18,29 +18,35 @@ export function ProfilePhoto({
 }: ProfilePhotoProps) {
   return (
     <div
-      className={cn('hex-flower relative bg-primary', className)}
+      className={cn(
+        'relative bg-primary',
+        className
+      )}
       style={{
         width: size,
         height: size,
-        borderWidth: borderWidth ? `${borderWidth}px` : undefined,
-        borderColor: borderWidth ? 'hsl(var(--primary))' : undefined,
+        clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
       }}
     >
       <div
-        className="hex-flower absolute inset-0 bg-background"
+        className="absolute bg-background"
         style={{
-          width: size,
-          height: size,
+          width: `calc(100% - ${borderWidth ? borderWidth * 2 : 0}px)`,
+          height: `calc(100% - ${borderWidth ? borderWidth * 2 : 0}px)`,
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
+          clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
         }}
       >
         <Image
           src={imageUrl}
           alt={alt}
           fill
-          className="hex-flower object-cover"
+          className="object-cover"
+          style={{
+            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+          }}
           data-ai-hint="user avatar"
         />
       </div>
