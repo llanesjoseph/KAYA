@@ -10,19 +10,19 @@ import { posts } from '@/lib/data';
 export default function ProfilePage() {
   return (
     <AppShell>
-      <div className="mx-auto w-full max-w-5xl">
-        <Card className="m-4 rounded-b-none">
+      <div className="w-full">
+        <Card className="m-4 rounded-b-none border-x-0 border-t-0">
           <CardContent className="p-0">
             <div className="relative h-48 w-full">
               <Image
                 src="https://placehold.co/1200x400.png"
                 alt="Cover image"
-                className="object-cover rounded-t-lg"
+                className="object-cover"
                 fill
                 data-ai-hint="header background"
               />
             </div>
-            <div className="p-6">
+            <div className="p-6 max-w-5xl mx-auto">
               <div className="relative flex items-end gap-6 -mt-20">
                 <Avatar className="h-32 w-32 border-4 border-background">
                   <AvatarImage
@@ -50,7 +50,7 @@ export default function ProfilePage() {
             </div>
           </CardContent>
         </Card>
-        <Tabs defaultValue="posts" className="p-4 pt-0">
+        <Tabs defaultValue="posts" className="p-4 pt-0 max-w-5xl mx-auto">
           <TabsList className="grid w-full grid-cols-3 bg-card">
             <TabsTrigger value="posts">Posts</TabsTrigger>
             <TabsTrigger value="media">Media</TabsTrigger>
