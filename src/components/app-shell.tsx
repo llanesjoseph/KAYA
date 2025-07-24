@@ -1,4 +1,3 @@
-
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -28,7 +27,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
-  SidebarInset,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
@@ -97,7 +95,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </SidebarMenu>
         </SidebarContent>
       </Sidebar>
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-col flex-1 overflow-hidden">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:px-6">
           <SidebarTrigger className="sm:hidden" />
           <div className="relative ml-auto flex-1 md:grow-0">
@@ -135,7 +133,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <main className="flex flex-1 overflow-auto">{children}</main>
+        <main className="flex-1 overflow-auto p-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-[1fr_380px] gap-8">
+                {children}
+            </div>
+        </main>
       </div>
     </div>
   );
