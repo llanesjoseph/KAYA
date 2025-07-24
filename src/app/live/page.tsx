@@ -23,7 +23,7 @@ export default function LivePage() {
           <div className="p-4 bg-gray-900/50 text-white">
             <div className='flex items-center gap-4'>
                 <Avatar className="h-16 w-16 border-4 border-[#8A2BE2]">
-                    <AvatarImage src="https://placehold.co/128x128" data-ai-hint="user avatar" />
+                    <AvatarImage src="https://placehold.co/128x128.png" data-ai-hint="user avatar" />
                     <AvatarFallback>LS</AvatarFallback>
                 </Avatar>
                 <div>
@@ -45,7 +45,7 @@ export default function LivePage() {
           <CardContent className="flex-1 overflow-y-auto space-y-4">
              <div className="flex items-start gap-3">
                 <Avatar className="h-8 w-8">
-                    <AvatarImage src="https://placehold.co/128x128" data-ai-hint="user avatar" />
+                    <AvatarImage src="https://placehold.co/128x128.png" data-ai-hint="user avatar" />
                 </Avatar>
                 <div>
                     <span className="font-semibold text-sm">viewer1</span>
@@ -54,7 +54,7 @@ export default function LivePage() {
              </div>
              <div className="flex items-start gap-3">
                 <Avatar className="h-8 w-8">
-                    <AvatarImage src="https://placehold.co/128x128" data-ai-hint="user avatar" />
+                    <AvatarImage src="https://placehold.co/128x128.png" data-ai-hint="user avatar" />
                 </Avatar>
                 <div>
                     <span className="font-semibold text-sm text-blue-500">viewer2</span>

@@ -21,6 +21,7 @@ const nextConfig = {
     'genkit',
     '@genkit-ai/core',
     '@genkit-ai/next',
+    '@genkit-ai/firebase',
   ],
 };
 

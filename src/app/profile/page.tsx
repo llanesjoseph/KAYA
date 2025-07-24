@@ -15,7 +15,7 @@ export default function ProfilePage() {
           <CardContent className="p-0">
             <div className="relative h-48 w-full">
               <Image
-                src="https://placehold.co/1200x400"
+                src="https://placehold.co/1200x400.png"
                 alt="Cover image"
                 className="object-cover rounded-t-lg"
                 fill
