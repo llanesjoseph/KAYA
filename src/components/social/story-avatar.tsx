@@ -6,25 +6,27 @@ interface StoryAvatarProps {
 }
 
 export function StoryAvatar({ story }: StoryAvatarProps) {
+  const organicShapeClipPath = 'path("M48.2,1.8C68.5,5.8,78.6,24.3,80,45.4s-11.4,41-31.8,42.8S6.6,83.1,2.2,62.2,12.5,12.3,27.9,4.2,39.3,-0.1,48.2,1.8Z")';
+
   return (
     <div className="flex flex-col items-center space-y-2">
       <div
-        className="relative w-[72px] h-[80px] flex items-center justify-center"
-        style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}
+        className="relative w-[82px] h-[90px] flex items-center justify-center"
       >
-        <div className="absolute inset-0 bg-primary"
-             style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}
+        <div
+            className="absolute inset-0 bg-primary"
+            style={{ clipPath: organicShapeClipPath }}
         ></div>
-        <div className="relative w-[68px] h-[76px] bg-background"
-             style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}
+        <div
+            className="relative w-[76px] h-[84px] bg-background"
+            style={{ clipPath: organicShapeClipPath }}
         >
           <Image
             src={story.user.avatarUrl}
             alt={story.user.name}
-            width={64}
-            height={64}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover w-[64px] h-[64px]"
-            style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}
+            fill
+            className="object-cover"
+            style={{ clipPath: organicShapeClipPath }}
             data-ai-hint="user avatar"
           />
         </div>
