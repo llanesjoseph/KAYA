@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 @layer base {
@@ -43,25 +43,25 @@ body {
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
-    --background: 0 0% 10%; /* #1A1A1A */
-    --foreground: 60 33% 93%; /* #F5F5DC */
-    --card: 0 0% 13%; /* #222222 */
-    --card-foreground: 60 33% 93%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 60 33% 93%;
-    --primary: 142 100% 13%; /* #004225 */
-    --primary-foreground: 60 33% 93%;
+    --background: 240 10% 3.9%; /* #1A1A1A - Charcoal Night */
+    --foreground: 60 30% 96.1%; /* #F5F5DC - Bone White */
+    --card: 240 5.9% 10%; /* #222222 */
+    --card-foreground: 60 30% 96.1%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 60 30% 96.1%;
+    --primary: 151 83% 13%; /* #004225 - Kaya Green */
+    --primary-foreground: 60 30% 96.1%;
     --secondary: 100 6% 59%;
-    --secondary-foreground: 60 33% 93%;
+    --secondary-foreground: 60 30% 96.1%;
     --muted: 100 6% 59%;
-    --muted-foreground: 130 6% 57%; /* #8A9A8C */
-    --accent: 45 100% 50%; /* #FFBF00 */
-    --accent-foreground: 0 0% 10%;
-    --destructive: 18 43% 44%; /* #B86A49 */
-    --destructive-foreground: 60 33% 93%;
+    --muted-foreground: 130 6% 57%; /* #8A9A8C - Muted Sage */
+    --accent: 45 100% 50%; /* #FFBF00 - Golden Amber */
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 18 43% 44%; /* #B86A49 - Terracotta */
+    --destructive-foreground: 60 30% 96.1%;
     --border: 100 6% 25%;
     --input: 100 6% 25%;
-    --ring: 142 100% 13%;
+    --ring: 151 83% 13%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -84,5 +84,12 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .hex-flower {
+    clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+    @apply bg-cover bg-center;
   }
 }

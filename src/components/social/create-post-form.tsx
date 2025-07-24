@@ -3,9 +3,9 @@
 import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { createPostAction } from '@/app/actions';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { ProfilePhoto } from '@/components/ui/profile-photo';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Send } from 'lucide-react';
@@ -16,7 +16,7 @@ function SubmitButton() {
     <Button
       type="submit"
       size="sm"
-      className="bg-[#8A2BE2] text-white hover:bg-[#7f26d1]"
+      className="bg-accent text-accent-foreground hover:bg-accent/90"
       disabled={pending}
     >
       <Send className="mr-2 h-4 w-4" />
@@ -49,14 +49,11 @@ export function CreatePostForm() {
       <CardContent className="p-4">
         <form action={dispatch} ref={formRef} className="space-y-4">
           <div className="flex items-start space-x-4">
-            <Avatar>
-              <AvatarImage
-                src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                alt="User"
-                data-ai-hint="user avatar"
-              />
-              <AvatarFallback>U</AvatarFallback>
-            </Avatar>
+            <ProfilePhoto
+              imageUrl="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+              alt="User"
+              size={40}
+            />
             <div className="flex-1">
               <Textarea
                 name="content"

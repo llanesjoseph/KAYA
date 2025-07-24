@@ -1,10 +1,5 @@
-import Image from 'next/image';
+import { formatDistanceToNow } from 'date-fns';
 import { Heart, MessageSquare, MoreHorizontal, Share2 } from 'lucide-react';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -18,8 +13,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ProfilePhoto } from '@/components/ui/profile-photo';
 import type { Post } from '@/lib/data';
-import { formatDistanceToNow } from 'date-fns';
+import Image from 'next/image';
 
 interface PostCardProps {
   post: Post;
@@ -29,15 +25,11 @@ export function PostCard({ post }: PostCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center gap-4 p-4">
-        <Avatar>
-          <AvatarImage src={post.author.avatarUrl} alt={post.author.name} data-ai-hint="user avatar" />
-          <AvatarFallback>
-            {post.author.name
-              .split(' ')
-              .map(n => n[0])
-              .join('')}
-          </AvatarFallback>
-        </Avatar>
+        <ProfilePhoto
+          imageUrl={post.author.avatarUrl}
+          alt={post.author.name}
+          size={40}
+        />
         <div className="flex-1">
           <p className="font-semibold">{post.author.name}</p>
           <p className="text-sm text-muted-foreground">
