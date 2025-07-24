@@ -53,7 +53,7 @@ export default function MessagesPage() {
         </div>
         
         {/* Chat Window */}
-        <div className="flex flex-col">
+        <div className="flex flex-col h-full">
           <div className="flex items-center gap-4 p-4 border-b">
             <Avatar>
               <AvatarImage src={activeChatUser.avatarUrl} alt={activeChatUser.name} data-ai-hint="user avatar" />
