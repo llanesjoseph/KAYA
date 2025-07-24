@@ -20,33 +20,29 @@ export function ProfilePhoto({
     <div
       className={cn(
         'relative bg-primary',
+        'hex-flower',
         className
       )}
       style={{
         width: size,
         height: size,
-        clipPath: 'path("M 43 6 L 57 6 L 62 14 L 70 14 L 75 22 L 70 30 L 75 38 L 70 46 L 62 46 L 57 54 L 43 54 L 38 46 L 30 46 L 25 38 L 30 30 L 25 22 L 30 14 L 38 14 Z")',
       }}
     >
       <div
-        className="absolute bg-background"
+        className="absolute bg-background hex-flower"
         style={{
           width: `calc(100% - ${borderWidth ? borderWidth * 2 : 0}px)`,
           height: `calc(100% - ${borderWidth ? borderWidth * 2 : 0}px)`,
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          clipPath: 'path("M 43 6 L 57 6 L 62 14 L 70 14 L 75 22 L 70 30 L 75 38 L 70 46 L 62 46 L 57 54 L 43 54 L 38 46 L 30 46 L 25 38 L 30 30 L 25 22 L 30 14 L 38 14 Z")',
         }}
       >
         <Image
           src={imageUrl}
           alt={alt}
           fill
-          className="object-cover"
-          style={{
-            clipPath: 'path("M 43 6 L 57 6 L 62 14 L 70 14 L 75 22 L 70 30 L 75 38 L 70 46 L 62 46 L 57 54 L 43 54 L 38 46 L 30 46 L 25 38 L 30 30 L 25 22 L 30 14 L 38 14 Z")',
-          }}
+          className="object-cover hex-flower"
           data-ai-hint="user avatar"
         />
       </div>
