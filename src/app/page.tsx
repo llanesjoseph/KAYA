@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import { CreatePostForm } from '@/components/social/create-post-form';
 import { PostCard } from '@/components/social/post-card';
-import { StoryAvatar } from '@/components/social/story-avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ProfilePhoto } from '@/components/ui/profile-photo';
@@ -24,7 +23,15 @@ export default function Home() {
               <ScrollArea>
                 <div className="flex space-x-4">
                   {stories.map(story => (
-                    <StoryAvatar key={story.id} story={story} />
+                    <div key={story.id} className="flex flex-col items-center space-y-2">
+                      <ProfilePhoto 
+                        imageUrl={story.user.avatarUrl}
+                        alt={story.user.name}
+                        size={100}
+                        borderWidth={2}
+                      />
+                      <p className="text-xs font-medium">{story.user.name}</p>
+                    </div>
                   ))}
                 </div>
                 <ScrollBar orientation="horizontal" />
