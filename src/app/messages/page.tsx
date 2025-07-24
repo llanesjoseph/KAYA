@@ -43,7 +43,7 @@ export default function MessagesPage() {
                   <div className="flex justify-between items-center mt-1">
                     <p className="text-sm text-muted-foreground truncate">{msg.lastMessage}</p>
                     {msg.unread > 0 && (
-                       <Badge className="bg-gradient-to-br from-purple-500 to-pink-500 text-white">{msg.unread}</Badge>
+                       <Badge className="bg-[#8A2BE2] text-white">{msg.unread}</Badge>
                     )}
                   </div>
                 </div>
@@ -84,7 +84,7 @@ export default function MessagesPage() {
                   <Input placeholder="Type a message..." className="pr-24 h-12" />
                   <div className="absolute top-1/2 right-3 -translate-y-1/2 flex items-center gap-1">
                       <Button variant="ghost" size="icon"><Smile className="h-5 w-5"/></Button>
-                      <Button size="icon" className="bg-gradient-to-br from-purple-500 to-pink-500 text-white">
+                      <Button size="icon" className="bg-[#8A2BE2] text-white hover:bg-[#7f26d1]">
                         <SendHorizonal className="h-5 w-5"/>
                       </Button>
                   </div>

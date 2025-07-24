@@ -8,7 +8,7 @@ interface StoryAvatarProps {
 export function StoryAvatar({ story }: StoryAvatarProps) {
   return (
     <div className="flex flex-col items-center space-y-2">
-      <div className="relative rounded-full p-1 bg-gradient-to-br from-purple-500 to-pink-500">
+      <div className="relative rounded-full p-1 bg-[#8A2BE2]">
         <div className="rounded-full bg-background p-0.5">
           <Image
             src={story.user.avatarUrl}
