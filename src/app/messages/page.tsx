@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import { formatDistanceToNow } from 'date-fns';
 import { SendHorizonal, Smile } from 'lucide-react';
@@ -43,7 +44,7 @@ export default function MessagesPage() {
                   <div className="flex justify-between items-center mt-1">
                     <p className="text-sm text-muted-foreground truncate">{msg.lastMessage}</p>
                     {msg.unread > 0 && (
-                       <Badge className="bg-[#8A2BE2] text-white">{msg.unread}</Badge>
+                       <Badge variant="secondary" className="bg-accent text-accent-foreground">{msg.unread}</Badge>
                     )}
                   </div>
                 </div>
@@ -53,7 +54,7 @@ export default function MessagesPage() {
         </div>
         
         {/* Chat Window */}
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full bg-background">
           <div className="flex items-center gap-4 p-4 border-b">
             <Avatar>
               <AvatarImage src={activeChatUser.avatarUrl} alt={activeChatUser.name} data-ai-hint="user avatar" />
@@ -61,7 +62,7 @@ export default function MessagesPage() {
             </Avatar>
             <h3 className="font-semibold text-lg">{activeChatUser.name}</h3>
           </div>
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-muted/20">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
               <div className="flex items-end gap-3">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={activeChatUser.avatarUrl} alt={activeChatUser.name} data-ai-hint="user avatar" />
@@ -84,7 +85,7 @@ export default function MessagesPage() {
                   <Input placeholder="Type a message..." className="pr-24 h-12" />
                   <div className="absolute top-1/2 right-3 -translate-y-1/2 flex items-center gap-1">
                       <Button variant="ghost" size="icon"><Smile className="h-5 w-5"/></Button>
-                      <Button size="icon" className="bg-[#8A2BE2] text-white hover:bg-[#7f26d1]">
+                      <Button size="icon" className="bg-accent text-accent-foreground hover:bg-accent/90">
                         <SendHorizonal className="h-5 w-5"/>
                       </Button>
                   </div>
