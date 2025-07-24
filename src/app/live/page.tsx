@@ -1,8 +1,8 @@
 import { AppShell } from '@/components/app-shell';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { ProfilePhoto } from '@/components/ui/profile-photo';
 import { SendHorizonal, Heart } from 'lucide-react';
 
 export default function LivePage() {
@@ -13,8 +13,8 @@ export default function LivePage() {
         <main className="flex flex-col bg-black">
           <div className="flex-1 flex items-center justify-center text-white">
             <div className="text-center">
-              <div className="w-24 h-24 rounded-full bg-[#8A2BE2] flex items-center justify-center mx-auto mb-4">
-                 <Heart className="w-12 h-12 text-white" />
+              <div className="w-24 h-24 rounded-full bg-primary flex items-center justify-center mx-auto mb-4">
+                 <Heart className="w-12 h-12 text-primary-foreground" />
               </div>
               <h1 className="font-headline text-3xl font-bold">Live Stream Offline</h1>
               <p className="text-muted-foreground mt-2">The creator isn't live right now. Check back later!</p>
@@ -22,15 +22,12 @@ export default function LivePage() {
           </div>
           <div className="p-4 bg-gray-900/50 text-white">
             <div className='flex items-center gap-4'>
-                <Avatar className="h-16 w-16 border-4 border-[#8A2BE2]">
-                    <AvatarImage src="https://placehold.co/128x128.png" data-ai-hint="user avatar" />
-                    <AvatarFallback>LS</AvatarFallback>
-                </Avatar>
+                <ProfilePhoto imageUrl="https://placehold.co/128x128.png" size={64} borderWidth={4} />
                 <div>
                     <h2 className="font-headline text-xl font-bold">Live with Next.js</h2>
                     <p className="text-sm">with @livestreamer</p>
                 </div>
-                <Button className="ml-auto bg-[#8A2BE2] text-white hover:bg-[#7f26d1]">
+                <Button className="ml-auto bg-accent text-accent-foreground hover:bg-accent/90">
                     Subscribe
                 </Button>
             </div>
@@ -44,18 +41,14 @@ export default function LivePage() {
           </CardHeader>
           <CardContent className="flex-1 overflow-y-auto space-y-4">
              <div className="flex items-start gap-3">
-                <Avatar className="h-8 w-8">
-                    <AvatarImage src="https://placehold.co/128x128.png" data-ai-hint="user avatar" />
-                </Avatar>
+                <ProfilePhoto imageUrl="https://placehold.co/128x128.png" size={32} />
                 <div>
                     <span className="font-semibold text-sm">viewer1</span>
                     <p className="text-sm text-muted-foreground">This is awesome!</p>
                 </div>
              </div>
              <div className="flex items-start gap-3">
-                <Avatar className="h-8 w-8">
-                    <AvatarImage src="https://placehold.co/128x128.png" data-ai-hint="user avatar" />
-                </Avatar>
+                <ProfilePhoto imageUrl="https://placehold.co/128x128.png" size={32} />
                 <div>
                     <span className="font-semibold text-sm text-blue-500">viewer2</span>
                     <p className="text-sm text-muted-foreground">Love this stream! 🔥</p>

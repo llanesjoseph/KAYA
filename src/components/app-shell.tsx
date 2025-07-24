@@ -12,7 +12,6 @@ import {
   User,
 } from 'lucide-react';
 import { KayaLogo } from '@/components/icons';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -23,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { ProfilePhoto } from '@/components/ui/profile-photo';
 import {
   Sidebar,
   SidebarContent,
@@ -32,7 +32,6 @@ import {
   SidebarMenuButton,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/', icon: Home, label: 'Home' },
@@ -109,18 +108,15 @@ export function AppShell({ children }: { children: ReactNode }) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="icon"
                 className="overflow-hidden rounded-full"
               >
-                <Avatar>
-                  <AvatarImage
-                    src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                    alt="User"
-                    data-ai-hint="user avatar"
-                  />
-                  <AvatarFallback>U</AvatarFallback>
-                </Avatar>
+                <ProfilePhoto
+                  imageUrl="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                  alt="User"
+                  size={32}
+                />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -134,9 +130,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           </DropdownMenu>
         </header>
         <main className="flex-1 overflow-auto p-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-[1fr_380px] gap-8">
-                {children}
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-[1fr_380px] gap-8 h-full">
+            {children}
+          </div>
         </main>
       </div>
     </div>

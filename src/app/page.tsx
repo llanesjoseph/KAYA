@@ -4,13 +4,14 @@ import { PostCard } from '@/components/social/post-card';
 import { StoryAvatar } from '@/components/social/story-avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ProfilePhoto } from '@/components/ui/profile-photo';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { posts, stories, suggestions } from '@/lib/data';
 
 export default function Home() {
   return (
     <>
-      <div className="col-span-1 space-y-8 md:col-span-2">
+      <main className="col-span-1 space-y-8 md:col-span-2">
         <section aria-labelledby="stories-heading">
           <h2
             id="stories-heading"
@@ -35,7 +36,7 @@ export default function Home() {
         <CreatePostForm />
 
         <section aria-labelledby="feed-heading">
-          <h2 id="feed-heading" className="font-headline text-2xl font-bold">
+          <h2 id="feed-heading" className="sr-only">
             Feed
           </h2>
           <div className="mt-4 space-y-6">
@@ -44,7 +45,7 @@ export default function Home() {
             ))}
           </div>
         </section>
-      </div>
+      </main>
       <aside className="hidden space-y-8 lg:block">
         <Card>
           <CardHeader>
@@ -55,14 +56,7 @@ export default function Home() {
           <CardContent className="space-y-4">
             {suggestions.map(user => (
               <div key={user.handle} className="flex items-center space-x-3">
-                <Image
-                  src={user.avatarUrl}
-                  alt={user.name}
-                  width={40}
-                  height={40}
-                  className="rounded-full"
-                  data-ai-hint="user avatar"
-                />
+                <ProfilePhoto imageUrl={user.avatarUrl} alt={user.name} size={40} />
                 <div>
                   <p className="font-semibold">{user.name}</p>
                   <p className="text-sm text-muted-foreground">
@@ -72,7 +66,7 @@ export default function Home() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="ml-auto bg-[#8A2BE2] text-white hover:bg-[#7f26d1]"
+                  className="ml-auto border-primary text-primary hover:bg-primary/10"
                 >
                   Follow
                 </Button>

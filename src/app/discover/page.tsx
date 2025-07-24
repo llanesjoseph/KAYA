@@ -3,6 +3,7 @@ import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { ProfilePhoto } from '@/components/ui/profile-photo';
 import { trendingTopics, suggestions } from '@/lib/data';
 import { Plus } from 'lucide-react';
 
@@ -54,12 +55,12 @@ export default function DiscoverPage() {
               <ul className="space-y-4">
                 {suggestions.map(user => (
                   <li key={user.name} className="flex items-center gap-4">
-                    <Image src={user.avatarUrl} alt={user.name} width={48} height={48} className="rounded-full" data-ai-hint="user avatar" />
+                    <ProfilePhoto imageUrl={user.avatarUrl} alt={user.name} size={48} />
                     <div className="flex-1">
                       <p className="font-semibold">{user.name}</p>
                       <p className="text-sm text-muted-foreground">@{user.handle}</p>
                     </div>
-                    <Button size="sm" className="bg-[#8A2BE2] text-white hover:bg-[#7f26d1]">
+                    <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
                         <Plus className="h-4 w-4 mr-2" /> Follow
                     </Button>
                   </li>
