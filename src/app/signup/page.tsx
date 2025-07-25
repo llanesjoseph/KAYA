@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export default function SignupPage() {
   const [date, setDate] = useState<Date>();
@@ -93,6 +94,12 @@ export default function SignupPage() {
               <div className="space-y-2">
                 <Label htmlFor="confirm-password">Confirm Password</Label>
                 <Input id="confirm-password" type="password" required />
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox id="age-attestation" required />
+                <Label htmlFor="age-attestation" className="text-sm font-normal text-muted-foreground">
+                  I confirm that I am 21 years of age or older.
+                </Label>
               </div>
               <Button type="submit" className="w-full">
                 Create Account
