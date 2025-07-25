@@ -14,7 +14,7 @@ export function ProfilePhoto({
   alt = 'Profile photo',
   size,
   className,
-  borderWidth = 2,
+  borderWidth = 1,
 }: ProfilePhotoProps) {
   const id = useId();
   const clipPathId = `hex-clip-${id}`;

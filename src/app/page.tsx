@@ -28,7 +28,7 @@ export default function Home() {
                         imageUrl={story.user.avatarUrl}
                         alt={story.user.name}
                         size={100}
-                        borderWidth={2}
+                        borderWidth={1}
                       />
                       <p className="text-xs font-medium">{story.user.name}</p>
                     </div>
