@@ -6,6 +6,7 @@ interface ProfilePhotoProps {
   alt?: string;
   size: number;
   className?: string;
+  borderWidth?: number;
 }
 
 export function ProfilePhoto({
@@ -13,6 +14,7 @@ export function ProfilePhoto({
   alt = 'Profile photo',
   size,
   className,
+  borderWidth = 1.75,
 }: ProfilePhotoProps) {
   const id = useId();
   const clipPathId = `hex-clip-${id}`;
@@ -50,7 +52,7 @@ export function ProfilePhoto({
         d={shadowPath}
         fill="none"
         stroke="rgba(0, 0, 0, 0.25)"
-        strokeWidth="1.75"
+        strokeWidth={borderWidth * 2.5}
       />
       
       <rect width="80" height="60" fill={`url(#${imagePatternId})`} clipPath={`url(#${clipPathId})`}/>
@@ -59,7 +61,7 @@ export function ProfilePhoto({
         d={hexPath}
         fill="none"
         stroke={`url(#${borderGradientId})`}
-        strokeWidth="1.75"
+        strokeWidth={borderWidth}
       />
     </svg>
   );
