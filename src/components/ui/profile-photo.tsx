@@ -23,9 +23,6 @@ export function ProfilePhoto({
   const hexPath =
     'M 43 6 L 57 6 L 62 14 L 70 14 L 75 22 L 70 30 L 75 38 L 70 46 L 62 46 L 57 54 L 43 54 L 38 46 L 30 46 L 25 38 L 30 30 L 25 22 L 30 14 L 38 14 Z';
 
-  const highlightPath = 'M 38 14 L 30 14 L 25 22 L 30 30';
-  const shadowPath = 'M 62 46 L 57 54 L 43 54 L 38 46';
-
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -55,6 +52,15 @@ export function ProfilePhoto({
           />
         </pattern>
       </defs>
+      
+      {/* 3D Effect Drop Shadow */}
+      <path 
+        d={hexPath} 
+        fill="hsl(var(--primary))"
+        transform="translate(2, 2)"
+        style={{ opacity: 0.5 }}
+      />
+      
       <rect
         width="80"
         height="60"
@@ -66,21 +72,6 @@ export function ProfilePhoto({
         fill="none"
         className="stroke-primary"
         strokeWidth={borderWidth * 2}
-      />
-      {/* 3D Effect Paths */}
-      <path
-        d={highlightPath}
-        fill="none"
-        stroke="hsl(var(--primary-foreground))"
-        strokeWidth={borderWidth}
-        strokeOpacity="0.5"
-      />
-      <path
-        d={shadowPath}
-        fill="none"
-        stroke="hsl(var(--primary))"
-        strokeWidth={borderWidth}
-        strokeOpacity="0.5"
       />
     </svg>
   );
