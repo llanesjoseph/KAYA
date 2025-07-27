@@ -30,10 +30,11 @@ export default function LandingPage() {
           <Image
             src="https://placehold.co/1920x1080.png"
             alt="KAYAHUB background"
-            layout="fill"
-            objectFit="cover"
+            fill
+            style={{ objectFit: 'cover' }}
             className="absolute z-0 opacity-30"
             data-ai-hint="kayahub logo"
+            priority
           />
           <div className="relative z-10 flex flex-col items-center p-4">
             <h1 className="font-headline text-5xl font-extrabold tracking-tight text-white md:text-7xl">

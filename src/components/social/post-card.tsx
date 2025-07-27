@@ -58,7 +58,7 @@ export function PostCard({ post }: PostCardProps) {
               src={post.imageUrl}
               alt="Post image"
               fill
-              className="object-cover"
+              style={{ objectFit: 'cover' }}
               data-ai-hint="social media post"
             />
           </div>
