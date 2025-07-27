@@ -117,7 +117,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </DropdownMenu>
         </header>
         <main className="flex-1 overflow-auto p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-[1fr_380px] gap-8 h-full">
+          <div className="container mx-auto h-full">
             {children}
           </div>
         </main>
