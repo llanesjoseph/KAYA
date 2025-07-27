@@ -4,20 +4,18 @@ export function KayaHubLogo(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       viewBox="0 0 24 24"
-      fill="currentColor"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <defs>
-        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style={{ stopColor: 'hsl(var(--primary))' }} />
-          <stop offset="100%" style={{ stopColor: 'hsl(var(--accent))' }} />
-        </linearGradient>
-      </defs>
-      <path
-        d="M7.16 21.98V2.02h2.44v19.96H7.16zm5.5-12.8c.44-.44.8-.82 1.08-1.14.28-.32.48-.58.6-.78.12-.2.18-.36.18-.48a.42.42 0 00-.14-.32.5.5 0 00-.36-.12h-.28c-.22 0-.48.1-.78.3-.3.2-.62.45-.96.75l-1.54-1.54c.46-.44.96-.82 1.5-1.14.54-.32 1.1-.48 1.68-.48.66 0 1.22.15 1.68.45.46.3.82.7 1.08 1.2.26.5.39 1.05.39 1.65 0 .4-.07.8-.21 1.2-.14.4-.35.8-.63 1.2-.28.4-.62.8-1.02 1.2l-1.87 1.87c-.48.48-.88.9-1.2 1.26-.32.36-.55.68-.7.96-.15.28-.22.53-.22.75 0 .3.1.54.3.72.2.18.45.27.75.27.28 0 .56-.09.84-.27.28-.18.58-.42.9-.72l1.54 1.54c-.44.48-.92.87-1.44 1.17-.52.3-1.07.45-1.65.45-.66 0-1.22-.15-1.68-.45-.46-.3-.82-.7-1.08-1.2-.26-.5-.39-1.05-.39-1.65 0-.42.08-.84.24-1.26.16-.42.4-.84.72-1.26.32-.42.7-.84 1.14-1.26l1.8-1.8z"
-        fill="url(#grad1)"
-      />
+      <circle cx="12" cy="12" r="10" fill="hsl(var(--background))" stroke="hsl(var(--foreground))" />
+      <path d="M14.5 9l-3 3 3 3" />
+      <path d="M10.5 12H12" />
+      <path d="M9.5 9v6" />
     </svg>
   );
 }
