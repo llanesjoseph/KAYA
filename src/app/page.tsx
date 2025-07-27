@@ -31,19 +31,12 @@ export default function LandingPage() {
             src="https://placehold.co/1920x1080.png"
             alt="KAYAHUB background"
             fill
-            style={{ objectFit: 'cover' }}
-            className="absolute z-0 opacity-30"
+            style={{ objectFit: 'contain' }}
+            className="absolute z-0"
             data-ai-hint="kayahub logo"
             priority
           />
           <div className="relative z-10 flex flex-col items-center p-4">
-            <h1 className="font-headline text-5xl font-extrabold tracking-tight text-white md:text-7xl">
-              Everything Cannabis, Everywhere.
-            </h1>
-            <p className="mt-4 max-w-2xl text-lg text-white/80 md:text-xl">
-              Your central hub to discover, connect, and grow within the
-              global cannabis community.
-            </p>
             <Link href="/signup" className="mt-8">
               <Button
                 size="lg"
