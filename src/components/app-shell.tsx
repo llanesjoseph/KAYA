@@ -11,7 +11,7 @@ import {
   Settings,
   User,
 } from 'lucide-react';
-import { KayaLogo } from '@/components/icons';
+import { KayaHubLogo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -53,7 +53,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <Sidebar side="left" variant="sidebar" collapsible="icon">
         <SidebarHeader className="border-b">
           <Link href="/home" className="flex items-center gap-2">
-            <KayaLogo className="h-8 w-auto" />
+            <KayaHubLogo className="h-8 w-auto" />
             <span className="font-headline text-xl font-bold sr-only group-data-[state=expanded]:not-sr-only">
               Kaya
             </span>

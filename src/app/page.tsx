@@ -10,7 +10,10 @@ export default function LandingPage() {
     <div className="flex min-h-screen flex-col bg-background font-body text-foreground">
       <header className="sticky top-0 z-50 flex h-20 items-center justify-between bg-background/80 px-4 backdrop-blur-sm md:px-8">
         <Link href="/" className="flex items-center gap-2">
-          <KayaHubLogo className="h-12 w-auto" />
+          <KayaHubLogo className="h-10 w-auto" />
+           <span className="font-headline text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            KAYAHUB
+          </span>
         </Link>
         <nav className="flex items-center gap-4">
           <Link href="/login">

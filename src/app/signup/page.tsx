@@ -15,7 +15,7 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 
-import { KayaLogo } from '@/components/icons';
+import { KayaHubLogo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -164,7 +164,7 @@ export default function SignupPage() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
         <div className="mb-8 flex justify-center">
-          <KayaLogo className="h-20 w-auto" />
+          <KayaHubLogo className="h-20 w-auto" />
         </div>
         <Card>
           <CardHeader className="text-center">
