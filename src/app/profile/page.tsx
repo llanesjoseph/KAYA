@@ -17,7 +17,7 @@ export default function ProfilePage() {
               <Image
                 src="https://placehold.co/1200x400.png"
                 alt="Cover image"
-                className="object-cover"
+                style={{ objectFit: 'cover' }}
                 fill
                 data-ai-hint="header background"
               />
