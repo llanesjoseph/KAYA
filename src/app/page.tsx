@@ -26,22 +26,20 @@ export default function LandingPage() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative flex h-[70vh] min-h-[500px] w-full flex-col items-center justify-center overflow-hidden bg-card text-center text-card-foreground">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-0 select-none"
-          >
-            <div className="flex h-full items-center justify-center">
-              <h1 className="font-headline text-[20vw] font-black text-foreground/5 md:text-[250px] lg:text-[350px]">
-                KAYAHUB
-              </h1>
-            </div>
-          </div>
+        <section className="relative flex h-[70vh] min-h-[500px] w-full flex-col items-center justify-center overflow-hidden bg-black text-center text-card-foreground">
+          <Image
+            src="https://placehold.co/1920x1080.png"
+            alt="KAYAHUB background"
+            layout="fill"
+            objectFit="cover"
+            className="absolute z-0 opacity-50"
+            data-ai-hint="kayahub logo"
+          />
           <div className="relative z-10 flex flex-col items-center p-4">
-            <h1 className="font-headline text-5xl font-extrabold tracking-tight text-foreground md:text-7xl">
+            <h1 className="font-headline text-5xl font-extrabold tracking-tight text-white md:text-7xl">
               Everything Cannabis, Everywhere.
             </h1>
-            <p className="mt-4 max-w-2xl text-lg text-muted-foreground md:text-xl">
+            <p className="mt-4 max-w-2xl text-lg text-white/80 md:text-xl">
               Your central hub to discover, connect, and grow within the
               global cannabis community.
             </p>
@@ -50,7 +48,7 @@ export default function LandingPage() {
                 size="lg"
                 className="bg-accent text-accent-foreground shadow-lg transition-transform hover:scale-105"
               >
-                Join KAYAHUB
+                Join KAYAHUB Today
               </Button>
             </Link>
           </div>
