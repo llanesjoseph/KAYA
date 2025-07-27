@@ -11,16 +11,13 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 flex h-20 items-center justify-between bg-background/80 px-4 backdrop-blur-sm md:px-8">
         <Link href="/" className="flex items-center gap-2">
           <KayaHubLogo className="h-10 w-auto" />
-           <span className="font-headline text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            KAYAHUB
-          </span>
         </Link>
         <nav className="flex items-center gap-4">
           <Link href="/login">
             <Button variant="ghost">Login</Button>
           </Link>
           <Link href="/signup">
-            <Button className="bg-gradient-to-r from-primary to-accent text-white">
+            <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
               Sign Up
             </Button>
           </Link>
@@ -29,24 +26,19 @@ export default function LandingPage() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative flex h-[70vh] min-h-[500px] w-full flex-col items-center justify-center overflow-hidden bg-gray-900 text-center text-white">
-          <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden opacity-10 pointer-events-none">
-            <h1 className="font-headline text-[25vw] font-black text-white whitespace-nowrap select-none">
-                KAYAHUB
-            </h1>
-          </div>
+        <section className="relative flex h-[70vh] min-h-[500px] w-full flex-col items-center justify-center overflow-hidden bg-card text-center text-white">
           <div className="relative z-10 flex flex-col items-center p-4">
             <h1 className="font-headline text-5xl font-extrabold tracking-tight md:text-7xl">
               Everything Cannabis, Everywhere.
             </h1>
-            <p className="mt-4 max-w-2xl text-lg text-gray-300 md:text-xl">
+            <p className="mt-4 max-w-2xl text-lg text-muted-foreground md:text-xl">
               Your central hub to discover, connect, and grow within the
               global cannabis community.
             </p>
             <Link href="/signup" className="mt-8">
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-primary to-accent text-white shadow-lg transition-transform hover:scale-105"
+                className="bg-accent text-accent-foreground shadow-lg transition-transform hover:scale-105"
               >
                 Join KAYAHUB
               </Button>
@@ -61,9 +53,9 @@ export default function LandingPage() {
               The Ultimate Cannabis Platform
             </h2>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-              <Card className="transform text-center transition-transform hover:-translate-y-2">
+              <Card className="transform text-center transition-transform hover:-translate-y-2 bg-card border-border">
                 <CardContent className="p-8">
-                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-primary to-accent text-white">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-accent text-accent">
                     <BookOpen className="h-8 w-8" />
                   </div>
                   <h3 className="font-headline text-2xl font-semibold">
@@ -75,9 +67,9 @@ export default function LandingPage() {
                   </p>
                 </CardContent>
               </Card>
-              <Card className="transform text-center transition-transform hover:-translate-y-2">
+              <Card className="transform text-center transition-transform hover:-translate-y-2 bg-card border-border">
                 <CardContent className="p-8">
-                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-primary to-accent text-white">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-accent text-accent">
                     <Users className="h-8 w-8" />
                   </div>
                   <h3 className="font-headline text-2xl font-semibold">
@@ -89,9 +81,9 @@ export default function LandingPage() {
                   </p>
                 </CardContent>
               </Card>
-              <Card className="transform text-center transition-transform hover:-translate-y-2">
+              <Card className="transform text-center transition-transform hover:-translate-y-2 bg-card border-border">
                 <CardContent className="p-8">
-                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-primary to-accent text-white">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-accent text-accent">
                     <MessageCircle className="h-8 w-8" />
                   </div>
                   <h3 className="font-headline text-2xl font-semibold">

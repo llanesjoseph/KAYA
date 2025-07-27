@@ -43,24 +43,24 @@ body {
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
-    --background: 240 10% 3.9%; /* #1A1A1A - Charcoal Night */
-    --foreground: 60 30% 96.1%; /* #F5F5DC - Bone White */
-    --card: 240 5.9% 10%; /* #222222 */
+    --background: 220 13% 11%; /* Dark Slate Gray */
+    --foreground: 60 30% 96.1%; /* Bone White */
+    --card: 220 13% 18%; /* Darker Card */
     --card-foreground: 60 30% 96.1%;
-    --popover: 240 10% 3.9%;
+    --popover: 220 13% 11%;
     --popover-foreground: 60 30% 96.1%;
     --primary: 175 80% 35%; /* Teal Primary */
     --primary-foreground: 60 30% 96.1%;
     --secondary: 100 6% 59%;
     --secondary-foreground: 60 30% 96.1%;
     --muted: 100 6% 59%;
-    --muted-foreground: 130 6% 57%; /* #8A9A8C - Muted Sage */
+    --muted-foreground: 220 10% 60%; 
     --accent: 180 70% 45%; /* Teal Accent */
-    --accent-foreground: 240 5.9% 10%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 18 43% 44%; /* #B86A49 - Terracotta */
     --destructive-foreground: 60 30% 96.1%;
-    --border: 100 6% 25%;
-    --input: 100 6% 25%;
+    --border: 220 13% 30%;
+    --input: 220 13% 30%;
     --ring: 175 80% 35%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
