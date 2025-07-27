@@ -14,19 +14,19 @@ body {
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 142 100% 13%;
+    --primary: 175 80% 35%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 84% 4.9%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 45 100% 50%;
+    --accent: 180 70% 45%;
     --accent-foreground: 210 40% 98%;
     --destructive: 18 43% 44%;
     --destructive-foreground: 210 40% 98%;
     --border: 100 6% 59%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 142 100% 13%;
+    --ring: 175 80% 35%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -35,7 +35,7 @@ body {
     --radius: 0.5rem;
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222.2 84% 4.9%;
-    --sidebar-primary: 142 100% 13%;
+    --sidebar-primary: 175 80% 35%;
     --sidebar-primary-foreground: 210 40% 98%;
     --sidebar-accent: 210 40% 96.1%;
     --sidebar-accent-foreground: 222.2 84% 4.9%;
@@ -49,19 +49,19 @@ body {
     --card-foreground: 60 30% 96.1%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 60 30% 96.1%;
-    --primary: 151 83% 13%; /* #004225 - Kaya Green */
+    --primary: 175 80% 35%; /* Teal Primary */
     --primary-foreground: 60 30% 96.1%;
     --secondary: 100 6% 59%;
     --secondary-foreground: 60 30% 96.1%;
     --muted: 100 6% 59%;
     --muted-foreground: 130 6% 57%; /* #8A9A8C - Muted Sage */
-    --accent: 45 100% 50%; /* #FFBF00 - Golden Amber */
+    --accent: 180 70% 45%; /* Teal Accent */
     --accent-foreground: 240 5.9% 10%;
     --destructive: 18 43% 44%; /* #B86A49 - Terracotta */
     --destructive-foreground: 60 30% 96.1%;
     --border: 100 6% 25%;
     --input: 100 6% 25%;
-    --ring: 151 83% 13%;
+    --ring: 175 80% 35%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -69,12 +69,12 @@ body {
     --chart-5: 340 75% 55%;
     --sidebar-background: 0 0% 10%;
     --sidebar-foreground: 60 33% 93%;
-    --sidebar-primary: 142 100% 13%;
+    --sidebar-primary: 175 80% 35%;
     --sidebar-primary-foreground: 60 33% 93%;
     --sidebar-accent: 100 6% 15%;
     --sidebar-accent-foreground: 60 33% 93%;
     --sidebar-border: 100 6% 25%;
-    --sidebar-ring: 142 100% 13%;
+    --sidebar-ring: 175 80% 35%;
   }
 }
 
