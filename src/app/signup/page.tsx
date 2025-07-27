@@ -98,7 +98,7 @@ export default function SignupPage() {
         description: 'Welcome to Kaya! Redirecting you to the homepage.',
       });
 
-      router.push('/');
+      router.push('/home');
 
     } catch (error: any) {
       const errorCode = error.code;
@@ -145,7 +145,7 @@ export default function SignupPage() {
         title: 'Account Created!',
         description: 'Welcome to Kaya! Redirecting you to the homepage.',
       });
-      router.push('/');
+      router.push('/home');
 
     } catch (error: any) {
       if (error.code === 'auth/popup-closed-by-user') {

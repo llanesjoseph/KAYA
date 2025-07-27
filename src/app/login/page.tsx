@@ -44,7 +44,7 @@ export default function LoginPage() {
         title: 'Signed In!',
         description: 'Welcome back! Redirecting you to the homepage.',
       });
-      router.push('/');
+      router.push('/home');
     } catch (error: any) {
       if (
         error.code === 'auth/user-not-found' ||
@@ -88,7 +88,7 @@ export default function LoginPage() {
         title: 'Signed In!',
         description: 'Welcome to Kaya! Redirecting you to the homepage.',
       });
-      router.push('/');
+      router.push('/home');
 
     } catch (error: any) {
        if (error.code === 'auth/popup-closed-by-user') {
