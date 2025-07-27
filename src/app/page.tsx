@@ -30,14 +30,11 @@ export default function LandingPage() {
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative flex h-[70vh] min-h-[500px] w-full flex-col items-center justify-center overflow-hidden bg-gray-900 text-center text-white">
-          <Image
-            src="https://placehold.co/1920x1080.png"
-            alt="Abstract cannabis-inspired background"
-            layout="fill"
-            objectFit="cover"
-            className="absolute z-0 opacity-20"
-            data-ai-hint="cannabis abstract background"
-          />
+          <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden opacity-10 pointer-events-none">
+            <h1 className="font-headline text-[25vw] font-black text-white whitespace-nowrap select-none">
+                KAYAHUB
+            </h1>
+          </div>
           <div className="relative z-10 flex flex-col items-center p-4">
             <h1 className="font-headline text-5xl font-extrabold tracking-tight md:text-7xl">
               Everything Cannabis, Everywhere.
