@@ -10,7 +10,7 @@ import { Plus } from 'lucide-react';
 export default function DiscoverPage() {
   return (
     <AppShell>
-      <div className="mx-auto w-full max-w-4xl p-4 sm:p-6 lg:p-8">
+      <div className="w-full p-4 sm:p-6 lg:p-8">
         <header className="mb-8">
           <h1 className="font-headline text-4xl font-extrabold tracking-tight lg:text-5xl">
             Discover
