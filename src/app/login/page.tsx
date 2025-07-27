@@ -3,8 +3,13 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
 import { KayaLogo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,6 +29,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -52,6 +58,47 @@ export default function LoginPage() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setError(null);
+    setGoogleLoading(true);
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Check if user exists in Firestore, if not, create a new document
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc.exists()) {
+        await setDoc(userDocRef, {
+          uid: user.uid,
+          displayName: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
+          bio: '',
+          createdAt: new Date(),
+        });
+      }
+      
+      toast({
+        title: 'Signed In!',
+        description: 'Welcome to Kaya! Redirecting you to the homepage.',
+      });
+      router.push('/');
+
+    } catch (error: any) {
+       if (error.code === 'auth/popup-closed-by-user') {
+        setError('Sign-in process was cancelled.');
+      } else {
+        setError('Failed to sign in with Google. Please try again.');
+        console.error(error);
+      }
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -85,7 +132,7 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  disabled={loading}
+                  disabled={loading || googleLoading}
                 />
               </div>
               <div className="space-y-2">
@@ -96,14 +143,14 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
+                  disabled={loading || googleLoading}
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full" disabled={loading || googleLoading}>
                 {loading ? 'Signing In...' : 'Sign In'}
               </Button>
-              <Button variant="outline" className="w-full" disabled={loading}>
-                Sign In with Google
+              <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={loading || googleLoading}>
+                {googleLoading ? 'Signing In...' : 'Sign In with Google'}
               </Button>
             </form>
             <div className="mt-4 text-center text-sm">

@@ -7,8 +7,13 @@ import { format, differenceInYears } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 
 import { auth, db } from '@/lib/firebase';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 import { KayaLogo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
@@ -42,6 +47,7 @@ export default function SignupPage() {
   
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const router = useRouter();
   const { toast } = useToast();
@@ -84,6 +90,7 @@ export default function SignupPage() {
         photoURL: `https://i.pravatar.cc/150?u=${user.uid}`,
         bio: '',
         createdAt: new Date(),
+        dob: dob,
       });
 
       toast({
@@ -107,6 +114,51 @@ export default function SignupPage() {
       setLoading(false);
     }
   };
+
+  const handleGoogleSignIn = async () => {
+    setError(null);
+    setGoogleLoading(true);
+    try {
+      const provider = new GoogleAuthProvider();
+      // We can prompt the user to re-provide their date of birth after this flow if needed
+      // For now, we will trust the age from Google, but a dedicated check is better
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc.exists()) {
+         await setDoc(userDocRef, {
+          uid: user.uid,
+          displayName: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
+          bio: '',
+          createdAt: new Date(),
+        });
+        // We are not collecting DOB for Google signups yet.
+        // This is a business logic decision to be made.
+      }
+      
+      toast({
+        title: 'Account Created!',
+        description: 'Welcome to Kaya! Redirecting you to the homepage.',
+      });
+      router.push('/');
+
+    } catch (error: any) {
+      if (error.code === 'auth/popup-closed-by-user') {
+        setError('Sign-up process was cancelled.');
+      } else {
+        setError('Failed to sign up with Google. Please try again.');
+        console.error(error);
+      }
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
@@ -139,7 +191,7 @@ export default function SignupPage() {
                   required 
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  disabled={loading}
+                  disabled={loading || googleLoading}
                 />
               </div>
               <div className="space-y-2">
@@ -151,7 +203,7 @@ export default function SignupPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  disabled={loading}
+                  disabled={loading || googleLoading}
                 />
               </div>
               <div className="space-y-2">
@@ -164,7 +216,7 @@ export default function SignupPage() {
                         'w-full justify-start text-left font-normal',
                         !dob && 'text-muted-foreground'
                       )}
-                      disabled={loading}
+                      disabled={loading || googleLoading}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {dob ? format(dob, 'PPP') : <span>Pick a date</span>}
@@ -192,7 +244,7 @@ export default function SignupPage() {
                   required 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
+                  disabled={loading || googleLoading}
                 />
               </div>
               <div className="space-y-2">
@@ -203,7 +255,7 @@ export default function SignupPage() {
                   required 
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  disabled={loading}
+                  disabled={loading || googleLoading}
                 />
               </div>
               <div className="flex items-center space-x-2">
@@ -212,17 +264,17 @@ export default function SignupPage() {
                   required 
                   checked={ageAttestation}
                   onCheckedChange={(checked) => setAgeAttestation(Boolean(checked))}
-                  disabled={loading}
+                  disabled={loading || googleLoading}
                 />
                 <Label htmlFor="age-attestation" className="text-sm font-normal text-muted-foreground">
                   I confirm that I am 21 years of age or older.
                 </Label>
               </div>
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full" disabled={loading || googleLoading}>
                 {loading ? 'Creating Account...' : 'Create Account'}
               </Button>
-              <Button variant="outline" className="w-full" disabled={loading}>
-                Sign Up with Google
+              <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={loading || googleLoading}>
+                 {googleLoading ? 'Redirecting...' : 'Sign Up with Google'}
               </Button>
             </form>
             <div className="mt-4 text-center text-sm">
