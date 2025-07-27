@@ -10,6 +10,8 @@ import {
   Search,
   Settings,
   User,
+  LogOut,
+  ChevronDown
 } from 'lucide-react';
 import { KayaHubLogo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
@@ -23,15 +25,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { ProfilePhoto } from '@/components/ui/profile-photo';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 
 const navItems = [
   { href: '/home', icon: Home, label: 'Home' },
@@ -50,53 +44,46 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      <Sidebar side="left" variant="sidebar" collapsible="icon">
-        <SidebarHeader className="border-b">
-          <Link href="/home" className="flex items-center gap-2">
-            <KayaHubLogo className="h-8 w-auto" />
-            <span className="font-headline text-xl font-bold sr-only group-data-[state=expanded]:not-sr-only">
-              Kaya
-            </span>
-          </Link>
-        </SidebarHeader>
-        <SidebarContent className="p-2">
-          <SidebarMenu>
-            {navItems.map(item => (
-              <SidebarMenuItem key={item.href}>
-                <Link href={item.href}>
-                  <SidebarMenuButton
-                    isActive={pathname === item.href}
-                    tooltip={item.label}
-                  >
-                    <item.icon />
-                    <span>{item.label}</span>
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarContent>
-        <SidebarContent className="p-2 mt-auto border-t">
-          <SidebarMenu>
-            {bottomNavItems.map(item => (
-              <SidebarMenuItem key={item.href}>
-                <Link href={item.href}>
-                  <SidebarMenuButton
-                    isActive={pathname === item.href}
-                    tooltip={item.label}
-                  >
-                    <item.icon />
-                    <span>{item.label}</span>
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarContent>
-      </Sidebar>
       <div className="flex flex-col flex-1 overflow-hidden">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:px-6">
-          <SidebarTrigger className="sm:hidden" />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="flex items-center gap-2"
+              >
+                <KayaHubLogo className="h-8 w-auto" />
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuLabel>Navigation</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {navItems.map(item => (
+                <Link href={item.href} key={item.href}>
+                  <DropdownMenuItem>
+                    <item.icon className="mr-2 h-4 w-4" />
+                    <span>{item.label}</span>
+                  </DropdownMenuItem>
+                </Link>
+              ))}
+               <DropdownMenuSeparator />
+                 {bottomNavItems.map(item => (
+                <Link href={item.href} key={item.href}>
+                  <DropdownMenuItem>
+                    <item.icon className="mr-2 h-4 w-4" />
+                    <span>{item.label}</span>
+                  </DropdownMenuItem>
+                </Link>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <div className="relative ml-auto flex-1 md:grow-0">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -122,8 +109,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Logout</DropdownMenuItem>
             </DropdownMenuContent>
