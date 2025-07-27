@@ -1,87 +1,129 @@
+import Link from 'next/link';
 import Image from 'next/image';
-import { CreatePostForm } from '@/components/social/create-post-form';
-import { PostCard } from '@/components/social/post-card';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ProfilePhoto } from '@/components/ui/profile-photo';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { posts, stories, suggestions } from '@/lib/data';
+import { Card, CardContent } from '@/components/ui/card';
+import { KayaLogo } from '@/components/icons';
+import { MessageCircle, Users, Sparkles } from 'lucide-react';
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <>
-      <main className="col-span-1 space-y-8 md:col-span-2">
-        <section aria-labelledby="stories-heading">
-          <h2
-            id="stories-heading"
-            className="font-headline text-2xl font-bold sr-only"
-          >
-            Stories
-          </h2>
-          <Card>
-            <CardContent className="p-4">
-              <ScrollArea>
-                <div className="flex space-x-4">
-                  {stories.map(story => (
-                    <div key={story.id} className="flex flex-col items-center space-y-2">
-                      <ProfilePhoto 
-                        imageUrl={story.user.avatarUrl}
-                        alt={story.user.name}
-                        size={100}
-                        borderWidth={1}
-                      />
-                      <p className="text-xs font-medium">{story.user.name}</p>
-                    </div>
-                  ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-            </CardContent>
-          </Card>
+    <div className="flex min-h-screen flex-col bg-background font-body text-foreground">
+      <header className="sticky top-0 z-50 flex h-20 items-center justify-between bg-background/80 px-4 backdrop-blur-sm md:px-8">
+        <Link href="/" className="flex items-center gap-2">
+          <KayaLogo className="h-10 w-auto" />
+          <span className="font-headline text-2xl font-bold">Kaya</span>
+        </Link>
+        <nav className="flex items-center gap-4">
+          <Link href="/login">
+            <Button variant="ghost">Login</Button>
+          </Link>
+          <Link href="/signup">
+            <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+              Sign Up
+            </Button>
+          </Link>
+        </nav>
+      </header>
+
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="relative flex h-[70vh] min-h-[500px] w-full flex-col items-center justify-center overflow-hidden bg-gray-900 text-center text-white">
+          <Image
+            src="https://placehold.co/1920x1080.png"
+            alt="Enchanted forest background"
+            layout="fill"
+            objectFit="cover"
+            className="absolute z-0 opacity-30"
+            data-ai-hint="enchanted forest"
+          />
+          <div className="relative z-10 flex flex-col items-center p-4">
+            <h1 className="font-headline text-5xl font-extrabold tracking-tight md:text-7xl">
+              Your Digital Sacred Grove
+            </h1>
+            <p className="mt-4 max-w-2xl text-lg text-gray-300 md:text-xl">
+              Reconnect with what matters. Share your journey, find your tribe,
+              and grow together in a space built for authentic connection.
+            </p>
+            <Link href="/signup" className="mt-8">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg transition-transform hover:scale-105"
+              >
+                Join the Grove
+              </Button>
+            </Link>
+          </div>
         </section>
 
-        <CreatePostForm />
-
-        <section aria-labelledby="feed-heading">
-          <h2 id="feed-heading" className="sr-only">
-            Feed
-          </h2>
-          <div className="mt-4 space-y-6">
-            {posts.map(post => (
-              <PostCard key={post.id} post={post} />
-            ))}
+        {/* Features Section */}
+        <section id="features" className="py-16 md:py-24">
+          <div className="container mx-auto max-w-6xl px-4">
+            <h2 className="mb-12 text-center font-headline text-4xl font-bold">
+              A New Kind of Social Media
+            </h2>
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+              <Card className="transform text-center transition-transform hover:-translate-y-2">
+                <CardContent className="p-8">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                    <MessageCircle className="h-8 w-8" />
+                  </div>
+                  <h3 className="font-headline text-2xl font-semibold">
+                    Connect & Share
+                  </h3>
+                  <p className="mt-2 text-muted-foreground">
+                    Share your stories, posts, and live moments in a vibrant and
+                    supportive feed.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="transform text-center transition-transform hover:-translate-y-2">
+                <CardContent className="p-8">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                    <Users className="h-8 w-8" />
+                  </div>
+                  <h3 className="font-headline text-2xl font-semibold">
+                    Discover Your Tribe
+                  </h3>
+                  <p className="mt-2 text-muted-foreground">
+                    Find trending topics and connect with people who share your
+                    passions and interests.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="transform text-center transition-transform hover:-translate-y-2">
+                <CardContent className="p-8">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                    <Sparkles className="h-8 w-8" />
+                  </div>
+                  <h3 className="font-headline text-2xl font-semibold">
+                    AI-Powered Moderation
+                  </h3>
+                  <p className="mt-2 text-muted-foreground">
+                    Our intelligent systems ensure a safe and positive
+                    environment for everyone.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </section>
       </main>
-      <aside className="hidden space-y-8 lg:block">
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline text-lg font-semibold">
-              Who to follow
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {suggestions.map(user => (
-              <div key={user.handle} className="flex items-center space-x-3">
-                <ProfilePhoto imageUrl={user.avatarUrl} alt={user.name} size={40} />
-                <div>
-                  <p className="font-semibold">{user.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    @{user.handle}
-                  </p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="ml-auto border-primary text-primary hover:bg-primary/10"
-                >
-                  Follow
-                </Button>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </aside>
-    </>
+
+      <footer className="border-t bg-card">
+        <div className="container mx-auto flex max-w-6xl items-center justify-between px-4 py-6">
+          <p className="text-sm text-muted-foreground">
+            &copy; {new Date().getFullYear()} Kaya. All rights reserved.
+          </p>
+          <div className="flex gap-4">
+            <Link href="#" className="text-sm hover:underline">
+              Privacy
+            </Link>
+            <Link href="#" className="text-sm hover:underline">
+              Terms of Service
+            </Link>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 }

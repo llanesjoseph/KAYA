@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/sidebar';
 
 const navItems = [
-  { href: '/', icon: Home, label: 'Home' },
+  { href: '/home', icon: Home, label: 'Home' },
   { href: '/discover', icon: Compass, label: 'Discover' },
   { href: '/messages', icon: MessageCircle, label: 'Messages' },
   { href: '/live', icon: Clapperboard, label: 'Live' },
@@ -52,7 +52,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen w-full flex-col bg-background">
       <Sidebar side="left" variant="sidebar" collapsible="icon">
         <SidebarHeader className="border-b">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/home" className="flex items-center gap-2">
             <KayaLogo className="h-8 w-auto" />
             <span className="font-headline text-xl font-bold sr-only group-data-[state=expanded]:not-sr-only">
               Kaya
