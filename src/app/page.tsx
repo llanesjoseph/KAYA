@@ -26,9 +26,19 @@ export default function LandingPage() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative flex h-[70vh] min-h-[500px] w-full flex-col items-center justify-center overflow-hidden bg-card text-center text-white">
+        <section className="relative flex h-[70vh] min-h-[500px] w-full flex-col items-center justify-center overflow-hidden bg-card text-center text-card-foreground">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-0 select-none"
+          >
+            <div className="flex h-full items-center justify-center">
+              <h1 className="font-headline text-[20vw] font-black text-foreground/5 md:text-[250px] lg:text-[350px]">
+                KAYAHUB
+              </h1>
+            </div>
+          </div>
           <div className="relative z-10 flex flex-col items-center p-4">
-            <h1 className="font-headline text-5xl font-extrabold tracking-tight md:text-7xl">
+            <h1 className="font-headline text-5xl font-extrabold tracking-tight text-foreground md:text-7xl">
               Everything Cannabis, Everywhere.
             </h1>
             <p className="mt-4 max-w-2xl text-lg text-muted-foreground md:text-xl">
