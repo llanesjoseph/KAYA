@@ -31,8 +31,8 @@ export default function LandingPage() {
             src="https://placehold.co/1920x1080.png"
             alt="KAYAHUB background"
             layout="fill"
-            objectFit="contain"
-            className="absolute z-0"
+            objectFit="cover"
+            className="absolute z-0 opacity-30"
             data-ai-hint="kayahub logo"
           />
           <div className="relative z-10 flex flex-col items-center p-4">
