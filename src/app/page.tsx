@@ -31,12 +31,15 @@ export default function LandingPage() {
             src="https://placehold.co/1920x1080.png"
             alt="KAYAHUB background"
             fill
-            style={{ objectFit: 'contain' }}
-            className="absolute z-0"
+            style={{ objectFit: 'cover' }}
+            className="absolute z-0 opacity-30"
             data-ai-hint="kayahub logo"
             priority
           />
           <div className="relative z-10 flex flex-col items-center p-4">
+             <h2 className="mb-12 text-center font-headline text-4xl font-bold">
+              The Ultimate Cannabis Platform
+            </h2>
             <Link href="/signup" className="mt-8">
               <Button
                 size="lg"
@@ -51,8 +54,8 @@ export default function LandingPage() {
         {/* Features Section */}
         <section id="features" className="py-16 md:py-24">
           <div className="container mx-auto max-w-6xl px-4">
-            <h2 className="mb-12 text-center font-headline text-4xl font-bold">
-              The Ultimate Cannabis Platform
+             <h2 className="mb-12 text-center font-headline text-4xl font-bold">
+              Everything you need, all in one place.
             </h2>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
               <Card className="transform text-center transition-transform hover:-translate-y-2 bg-card border-border">
