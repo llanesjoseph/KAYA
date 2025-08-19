@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { AuthContextProvider } from '@/context/auth-context';
 
 export const metadata: Metadata = {
   title: 'Kaya Social Media',
@@ -28,10 +29,12 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <SidebarProvider>
-          {children}
-          <Toaster />
-        </SidebarProvider>
+        <AuthContextProvider>
+          <SidebarProvider>
+            {children}
+            <Toaster />
+          </SidebarProvider>
+        </AuthContextProvider>
       </body>
     </html>
   );

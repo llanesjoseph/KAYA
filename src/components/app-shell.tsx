@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { type ReactNode } from 'react';
 import {
   Clapperboard,
@@ -25,7 +25,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { ProfilePhoto } from '@/components/ui/profile-photo';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { useAuth } from '@/context/auth-context';
+import { useToast } from '@/hooks/use-toast';
+import { auth } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
+
 
 const navItems = [
   { href: '/home', icon: Home, label: 'Home' },
@@ -41,6 +45,27 @@ const bottomNavItems = [
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: 'Signed Out',
+        description: 'You have been successfully signed out.',
+      });
+      router.push('/login');
+    } catch (error) {
+      console.error('Error signing out: ', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to sign out. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -77,7 +102,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </Link>
               ))}
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Logout</span>
               </DropdownMenuItem>
@@ -98,21 +123,26 @@ export function AppShell({ children }: { children: ReactNode }) {
                 variant="ghost"
                 size="icon"
                 className="overflow-hidden rounded-full"
+                disabled={loading || !user}
               >
                 <ProfilePhoto
-                  imageUrl="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                  alt="User"
+                  imageUrl={user?.photoURL || "https://i.pravatar.cc/150?u=a042581f4e29026704d"}
+                  alt={user?.displayName || "User"}
                   size={32}
                 />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>{user?.displayName || 'My Account'}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <Link href="/profile">
+                <DropdownMenuItem>Profile</DropdownMenuItem>
+              </Link>
+              <Link href="/settings">
+                <DropdownMenuItem>Settings</DropdownMenuItem>
+              </Link>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
