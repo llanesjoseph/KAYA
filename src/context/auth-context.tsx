@@ -17,15 +17,24 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const mockMode =
+    typeof process !== 'undefined' && typeof process.env !== 'undefined'
+      ? process.env.NEXT_PUBLIC_MOCK_MODE !== 'false'
+      : true;
 
   useEffect(() => {
+    if (mockMode) {
+      setUser({} as unknown as User);
+      setLoading(false);
+      return;
+    }
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [mockMode]);
 
   return (
     <AuthContext.Provider value={{ user, loading }}>

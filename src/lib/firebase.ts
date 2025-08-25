@@ -16,14 +16,33 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const db = getFirestore(app);
-const auth = getAuth(app);
-const storage = getStorage(app);
-const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
+const isMockMode =
+  typeof process !== 'undefined' && typeof process.env !== 'undefined'
+    ? process.env.NEXT_PUBLIC_MOCK_MODE !== 'false'
+    : true;
+
+// Initialize Firebase only when not in mock mode
+const app = !isMockMode
+  ? (!getApps().length ? initializeApp(firebaseConfig) : getApp())
+  : (null as unknown as import('firebase/app').FirebaseApp);
+
+const db = !isMockMode
+  ? getFirestore(app)
+  : (null as unknown as ReturnType<typeof getFirestore>);
+
+const auth = !isMockMode
+  ? getAuth(app)
+  : ({} as unknown as ReturnType<typeof getAuth>);
+
+const storage = !isMockMode
+  ? getStorage(app)
+  : (null as unknown as ReturnType<typeof getStorage>);
+
+const analytics = !isMockMode && typeof window !== 'undefined'
+  ? getAnalytics(app)
+  : null;
 
 export { app, db, auth, storage, analytics };
