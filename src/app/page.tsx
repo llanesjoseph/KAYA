@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { KayaHubLogo } from '@/components/icons';
 import { Users, BookOpen, MessageCircle } from 'lucide-react';
+import { Container, Section, Heading, Text } from '@/components/ui/kaya-hub';
 
 export default function LandingPage() {
   return (
@@ -13,11 +14,14 @@ export default function LandingPage() {
           <KayaHubLogo className="h-10 w-auto" />
         </Link>
         <nav className="flex items-center gap-4">
+          <Link href="/design-system">
+            <Button variant="winter" size="sm">Design System</Button>
+          </Link>
           <Link href="/login">
             <Button variant="ghost">Login</Button>
           </Link>
           <Link href="/signup">
-            <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+            <Button variant="spring" className="hover:scale-105 transition-transform">
               Sign Up
             </Button>
           </Link>
@@ -37,13 +41,18 @@ export default function LandingPage() {
             priority
           />
           <div className="relative z-10 flex flex-col items-center p-4">
-             <h2 className="mb-12 text-center font-headline text-4xl font-bold">
+            <Heading variant="primary" as="h2" className="mb-12 text-center heading-spring">
               The Ultimate Cannabis Platform
-            </h2>
+            </Heading>
+            <Text variant="body" className="mb-8 text-center text-text-spring-secondary max-w-2xl">
+              Discover, connect, and grow with the cannabis community. From winter dormancy to spring emergence, 
+              cultivate your journey with Kaya Hub.
+            </Text>
             <Link href="/signup" className="mt-8">
               <Button
+                variant="spring"
                 size="lg"
-                className="bg-accent text-accent-foreground shadow-lg transition-transform hover:scale-105"
+                className="shadow-lg transition-transform hover:scale-105 shimmer"
               >
                 Join KAYAHUB Today
               </Button>
@@ -52,74 +61,74 @@ export default function LandingPage() {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="py-16 md:py-24">
+        <Container variant="seasonal-overlay" className="py-16 md:py-24">
           <div className="container mx-auto max-w-6xl px-4">
-             <h2 className="mb-12 text-center font-headline text-4xl font-bold">
+            <Heading variant="primary" as="h2" className="mb-12 text-center heading-winter">
               Everything you need, all in one place.
-            </h2>
+            </Heading>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-              <Card className="transform text-center transition-transform hover:-translate-y-2 bg-card border-border">
+              <Card variant="winter" className="text-center hover-lift">
                 <CardContent className="p-8">
-                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-accent text-accent">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-winter-bark text-winter-bark">
                     <BookOpen className="h-8 w-8" />
                   </div>
-                  <h3 className="font-headline text-2xl font-semibold">
+                  <Heading variant="secondary" as="h3" className="heading-winter">
                     Discover & Learn
-                  </h3>
-                  <p className="mt-2 text-muted-foreground">
+                  </Heading>
+                  <Text variant="body" className="mt-2 text-text-winter-secondary">
                     Explore a vast database of strains, products, and educational
                     content from experts.
-                  </p>
+                  </Text>
                 </CardContent>
               </Card>
-              <Card className="transform text-center transition-transform hover:-translate-y-2 bg-card border-border">
+              <Card variant="transition" className="text-center hover-lift">
                 <CardContent className="p-8">
-                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-accent text-accent">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-thaw-brown text-thaw-brown">
                     <Users className="h-8 w-8" />
                   </div>
-                  <h3 className="font-headline text-2xl font-semibold">
+                  <Heading variant="secondary" as="h3" className="heading-winter">
                     Connect with Community
-                  </h3>
-                  <p className="mt-2 text-muted-foreground">
+                  </Heading>
+                  <Text variant="body" className="mt-2 text-text-winter-secondary">
                     Join discussions, share experiences, and connect with fellow
                     enthusiasts and businesses.
-                  </p>
+                  </Text>
                 </CardContent>
               </Card>
-              <Card className="transform text-center transition-transform hover:-translate-y-2 bg-card border-border">
+              <Card variant="spring" className="text-center hover-lift">
                 <CardContent className="p-8">
-                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-accent text-accent">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-new-shoots text-new-shoots">
                     <MessageCircle className="h-8 w-8" />
                   </div>
-                  <h3 className="font-headline text-2xl font-semibold">
+                  <Heading variant="secondary" as="h3" className="heading-spring">
                     Stay Informed
-                  </h3>
-                  <p className="mt-2 text-muted-foreground">
+                  </Heading>
+                  <Text variant="body" className="mt-2 text-text-spring-secondary">
                     Get the latest news, legal updates, and trends from the
                     cannabis industry.
-                  </p>
+                  </Text>
                 </CardContent>
               </Card>
             </div>
           </div>
-        </section>
+        </Container>
       </main>
 
-      <footer className="border-t bg-card">
+      <Section variant="winter" className="border-t">
         <div className="container mx-auto flex max-w-6xl items-center justify-between px-4 py-6">
-          <p className="text-sm text-muted-foreground">
+          <Text variant="small" className="text-text-muted">
             &copy; {new Date().getFullYear()} KAYAHUB. All rights reserved.
-          </p>
+          </Text>
           <div className="flex gap-4">
-            <Link href="#" className="text-sm hover:underline">
+            <Link href="#" className="text-small text-text-winter-secondary hover:text-text-winter-headline transition-colors">
               Privacy
             </Link>
-            <Link href="#" className="text-sm hover:underline">
+            <Link href="#" className="text-small text-text-winter-secondary hover:text-text-winter-headline transition-colors">
               Terms of Service
             </Link>
           </div>
         </div>
-      </footer>
+      </Section>
     </div>
   );
 }

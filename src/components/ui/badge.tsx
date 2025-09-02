@@ -4,12 +4,16 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "badge transition-all duration-300",
   {
     variants: {
       variant: {
-        default:
-          "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
+        // Kaya Hub Badge Variants
+        default: "badge",
+        winter: "badge-winter",
+        spring: "badge-spring",
+        transition: "badge border-thaw-brown/50 text-thaw-brown/80 hover:bg-thaw-brown/10 hover:text-thaw-brown hover:border-thaw-brown/70",
+        // Legacy variants (keep for compatibility)
         secondary:
           "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive:
