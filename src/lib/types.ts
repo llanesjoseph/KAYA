@@ -5,9 +5,13 @@ export type UserProfile = {
   displayName: string | null;
   email: string | null;
   photoURL: string | null;
+  bannerUrl?: string | null;
   bio: string;
   createdAt: any; // Firestore Timestamp
   dob?: any; // Firestore Timestamp (optional)
+  roles?: string[]; // e.g., ['Educator','Business','Medical']
+  expertiseTags?: string[]; // e.g., ['Cultivation','Compliance']
+  links?: { label: string; url: string }[];
 };
 
 export type PostDocument = {

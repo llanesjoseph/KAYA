@@ -44,6 +44,7 @@ const postsCol = collection(db, 'posts');
 const commentsCol = collection(db, 'comments');
 const likesCol = collection(db, 'likes');
 const followsCol = collection(db, 'follows');
+const companyFollowsCol = collection(db, 'companyFollows');
 const threadsCol = collection(db, 'threads');
 const messagesCol = collection(db, 'messages');
 const notificationsCol = collection(db, 'notifications');
@@ -249,6 +250,27 @@ export async function toggleFollow(followerId: string, followingId: string) {
   } else {
     await followUser(followerId, followingId);
     return true;
+  }
+}
+
+// Company follow
+export async function isFollowingCompany(userId: string, companyId: string) {
+  const q = query(companyFollowsCol, where('userId', '==', userId), where('companyId', '==', companyId));
+  const snap = await getDocs(q);
+  return !snap.empty;
+}
+
+export async function toggleFollowCompany(userId: string, companyId: string) {
+  const q = query(companyFollowsCol, where('userId', '==', userId), where('companyId', '==', companyId));
+  const snap = await getDocs(q);
+  if (snap.empty) {
+    await addDoc(companyFollowsCol, { userId, companyId, createdAt: serverTimestamp() });
+    return true;
+  } else {
+    const batch = writeBatch(db);
+    snap.docs.forEach(d => batch.delete(d.ref));
+    await batch.commit();
+    return false;
   }
 }
 

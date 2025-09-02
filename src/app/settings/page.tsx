@@ -16,6 +16,8 @@ import { AuthGuard } from '@/components/auth-guard';
 import { useAuth } from '@/context/auth-context';
 import { db } from '@/lib/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
+import { uploadMediaAndGetUrl } from '@/lib/db';
+import { Input as FileInput } from '@/components/ui/input';
 import { useEffect, useState } from 'react';
 
 export default function SettingsPage() {
@@ -23,6 +25,11 @@ export default function SettingsPage() {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
+  const [roles, setRoles] = useState<string>('');
+  const [expertise, setExpertise] = useState<string>('');
+  const [links, setLinks] = useState<string>('');
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -33,9 +40,18 @@ export default function SettingsPage() {
 
   const onSave = async () => {
     if (!user) return;
+    let photoURL = user.photoURL || null;
+    let bannerUrl: string | null | undefined;
+    if (avatarFile) photoURL = await uploadMediaAndGetUrl(avatarFile, 'avatars');
+    if (bannerFile) bannerUrl = await uploadMediaAndGetUrl(bannerFile, 'banners');
     await updateDoc(doc(db, 'users', user.uid), {
       displayName: name,
       bio,
+      photoURL,
+      bannerUrl: bannerUrl || null,
+      roles: roles.split(',').map(s => s.trim()).filter(Boolean),
+      expertiseTags: expertise.split(',').map(s => s.trim()).filter(Boolean),
+      links: links.split(',').map(s => s.trim()).filter(Boolean).map((url: string) => ({ label: url, url })),
     });
   };
   return (
@@ -61,6 +77,14 @@ export default function SettingsPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
+                  <Label>Avatar</Label>
+                  <FileInput type="file" accept="image/*" onChange={(e) => setAvatarFile(e.target.files?.[0] || null)} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Banner</Label>
+                  <FileInput type="file" accept="image/*" onChange={(e) => setBannerFile(e.target.files?.[0] || null)} />
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
                   <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
                 </div>
@@ -71,6 +95,18 @@ export default function SettingsPage() {
                 <div className="space-y-2">
                   <Label htmlFor="bio">Bio</Label>
                   <Input id="bio" placeholder="Tell us about yourself" value={bio} onChange={(e) => setBio(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="roles">Roles (comma separated)</Label>
+                  <Input id="roles" value={roles} onChange={(e) => setRoles(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="expertise">Expertise tags (comma separated)</Label>
+                  <Input id="expertise" value={expertise} onChange={(e) => setExpertise(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="links">Links (comma separated URLs)</Label>
+                  <Input id="links" value={links} onChange={(e) => setLinks(e.target.value)} />
                 </div>
               </CardContent>
               <CardFooter className="border-t px-6 py-4">
