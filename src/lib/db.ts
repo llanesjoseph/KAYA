@@ -110,6 +110,7 @@ export async function toggleLike(postId: string, userId: string) {
   const likeDocId = `${postId}_${userId}`;
   const likeRef = doc(likesCol, likeDocId);
   const postRef = doc(postsCol, postId);
+  let created = false;
   await runTransaction(db, async transaction => {
     const likeSnap = await transaction.get(likeRef);
     if (likeSnap.exists()) {
@@ -118,8 +119,26 @@ export async function toggleLike(postId: string, userId: string) {
     } else {
       transaction.set(likeRef, { postId, userId, createdAt: serverTimestamp() } as LikeDocument);
       transaction.update(postRef, { likeCount: increment(1) });
+      created = true;
     }
   });
+  // Fire-and-forget notification
+  if (created) {
+    try {
+      const postSnap = await getDoc(postRef);
+      const post = postSnap.data() as PostDocument | undefined;
+      if (post && post.authorId && post.authorId !== userId) {
+        await createNotification({ userId: post.authorId, type: 'like', refId: postId, actorId: userId });
+      }
+    } catch {}
+  }
+}
+
+export async function isPostLikedByUser(postId: string, userId: string) {
+  const likeDocId = `${postId}_${userId}`;
+  const likeRef = doc(likesCol, likeDocId);
+  const snap = await getDoc(likeRef);
+  return snap.exists();
 }
 
 export async function addComment(postId: string, author: { uid: string; displayName: string | null; photoURL: string | null; }, content: string) {
@@ -134,6 +153,14 @@ export async function addComment(postId: string, author: { uid: string; displayN
   const ref = await addDoc(commentsCol, comment as any);
   const postRef = doc(postsCol, postId);
   await updateDoc(postRef, { commentCount: increment(1) });
+  // Notify post author
+  try {
+    const postSnap = await getDoc(postRef);
+    const post = postSnap.data() as PostDocument | undefined;
+    if (post && post.authorId && post.authorId !== author.uid) {
+      await createNotification({ userId: post.authorId, type: 'comment', refId: postId, actorId: author.uid });
+    }
+  } catch {}
   return ref.id;
 }
 
@@ -165,6 +192,9 @@ export async function followUser(followerId: string, followingId: string) {
       followingId,
       createdAt: serverTimestamp(),
     } as FollowDocument);
+    try {
+      await createNotification({ userId: followingId, type: 'follow', refId: followerId, actorId: followerId });
+    } catch {}
   }
 }
 
@@ -178,6 +208,27 @@ export async function unfollowUser(followerId: string, followingId: string) {
   const batch = writeBatch(db);
   snap.docs.forEach(d => batch.delete(d.ref));
   await batch.commit();
+}
+
+export async function isFollowing(followerId: string, followingId: string) {
+  const q = query(
+    followsCol,
+    where('followerId', '==', followerId),
+    where('followingId', '==', followingId)
+  );
+  const snap = await getDocs(q);
+  return !snap.empty;
+}
+
+export async function toggleFollow(followerId: string, followingId: string) {
+  const currentlyFollowing = await isFollowing(followerId, followingId);
+  if (currentlyFollowing) {
+    await unfollowUser(followerId, followingId);
+    return false;
+  } else {
+    await followUser(followerId, followingId);
+    return true;
+  }
 }
 
 export async function upsertThread(participantIds: string[]) {
@@ -231,5 +282,41 @@ export async function listMessages(threadId: string, pageSize = 50, cursor?: any
 
 export async function createNotification(n: Omit<NotificationDocument, 'createdAt' | 'read'>) {
   await addDoc(notificationsCol, { ...n, read: false, createdAt: serverTimestamp() } as any);
+}
+
+export async function listNotifications(userId: string, pageSize = 20) {
+  const q = query(notificationsCol, where('userId', '==', userId), orderBy('createdAt', 'desc'), limit(pageSize));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (NotificationDocument & { id: string })[];
+}
+
+export async function markAllNotificationsRead(userId: string) {
+  const q = query(notificationsCol, where('userId', '==', userId), where('read', '==', false));
+  const snap = await getDocs(q);
+  const batch = writeBatch(db);
+  snap.docs.forEach(d => batch.update(d.ref, { read: true }));
+  await batch.commit();
+}
+
+export async function searchUsersByNamePrefix(prefix: string, pageSize = 20) {
+  const end = prefix + '\uf8ff';
+  const q = query(usersCol, orderBy('displayName'), where('displayName', '>=', prefix), where('displayName', '<=', end), limit(pageSize));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (UserProfile & { id: string })[];
+}
+
+export async function searchPostsByContentPrefix(prefix: string, pageSize = 20) {
+  const end = prefix + '\uf8ff';
+  const q = query(postsCol, orderBy('content'), where('content', '>=', prefix), where('content', '<=', end), limit(pageSize));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (PostDocument & { id: string })[];
+}
+
+export function subscribeMessages(threadId: string, onUpdate: (messages: (MessageDocument & { id: string })[]) => void) {
+  const q = query(messagesCol, where('threadId', '==', threadId), orderBy('createdAt', 'asc'));
+  return onSnapshot(q, (snap) => {
+    const items = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (MessageDocument & { id: string })[];
+    onUpdate(items);
+  });
 }
 

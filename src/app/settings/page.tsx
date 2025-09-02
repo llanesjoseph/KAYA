@@ -1,3 +1,4 @@
+"use client";
 import { AppShell } from '@/components/app-shell';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,8 +13,31 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { AuthGuard } from '@/components/auth-guard';
+import { useAuth } from '@/context/auth-context';
+import { db } from '@/lib/firebase';
+import { doc, updateDoc } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 
 export default function SettingsPage() {
+  const { user } = useAuth();
+  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
+  const [bio, setBio] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      setName(user.displayName || '');
+      setUsername(user.email ? user.email.split('@')[0] : '');
+    }
+  }, [user]);
+
+  const onSave = async () => {
+    if (!user) return;
+    await updateDoc(doc(db, 'users', user.uid), {
+      displayName: name,
+      bio,
+    });
+  };
   return (
     <AuthGuard>
       <AppShell>
@@ -38,19 +62,19 @@ export default function SettingsPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
-                  <Input id="name" defaultValue="Kaya User" />
+                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="username">Username</Label>
-                  <Input id="username" defaultValue="@kayauser" />
+                  <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="bio">Bio</Label>
-                  <Input id="bio" placeholder="Tell us about yourself" />
+                  <Input id="bio" placeholder="Tell us about yourself" value={bio} onChange={(e) => setBio(e.target.value)} />
                 </div>
               </CardContent>
               <CardFooter className="border-t px-6 py-4">
-                <Button>Save Changes</Button>
+                <Button onClick={onSave}>Save Changes</Button>
               </CardFooter>
             </Card>
 
