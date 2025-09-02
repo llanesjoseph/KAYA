@@ -7,6 +7,8 @@ import {
   Compass,
   Home,
   MessageCircle,
+  Newspaper,
+  Briefcase,
   Search,
   Settings,
   User,
@@ -37,8 +39,10 @@ import { useEffect, useState } from 'react';
 const navItems = [
   { href: '/home', icon: Home, label: 'Home' },
   { href: '/discover', icon: Compass, label: 'Discover' },
+  { href: '/articles', icon: Newspaper, label: 'Articles' },
   { href: '/messages', icon: MessageCircle, label: 'Messages' },
   { href: '/live', icon: Clapperboard, label: 'Live' },
+  { href: '/jobs', icon: Briefcase, label: 'Jobs' },
 ];
 
 const bottomNavItems = [
