@@ -39,7 +39,7 @@ export default function ProfilePage() {
             <CardContent className="p-0">
               <div className="relative h-48 w-full">
                 <Image
-                  src="https://placehold.co/1200x400.png"
+                  src={profile?.bannerUrl || 'https://placehold.co/1200x400.png'}
                   alt="Cover image"
                   style={{ objectFit: 'cover' }}
                   fill
@@ -68,13 +68,18 @@ export default function ProfilePage() {
                 <p className="mt-4 text-muted-foreground">
                   {profile?.bio || 'No bio yet.'}
                 </p>
-                <div className="mt-4 flex gap-6 text-sm">
-                  <p>
-                    <span className="font-bold">—</span> Following
-                  </p>
-                  <p>
-                    <span className="font-bold">—</span> Followers
-                  </p>
+                <div className="mt-4 flex flex-wrap gap-2 text-xs">
+                  {profile?.roles?.map(r => (
+                    <span key={r} className="px-2 py-1 rounded bg-muted">{r}</span>
+                  ))}
+                  {profile?.expertiseTags?.map(t => (
+                    <span key={t} className="px-2 py-1 rounded border text-muted-foreground">{t}</span>
+                  ))}
+                </div>
+                <div className="mt-2 space-x-3 text-sm">
+                  {profile?.links?.map(l => (
+                    <a key={l.url} href={l.url} target="_blank" rel="noreferrer" className="text-primary hover:underline">{l.label}</a>
+                  ))}
                 </div>
               </div>
             </CardContent>
