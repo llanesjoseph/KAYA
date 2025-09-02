@@ -108,7 +108,7 @@ export async function fetchGlobalFeed(pageSize = 20, cursor?: any) {
   const snap = await getDocs(q);
   const items = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (PostDocument & { id: string })[];
   const nextCursor = snap.docs.length ? snap.docs[snap.docs.length - 1].data().createdAt : undefined;
-  return { items, nextCursor };
+  return { items: items.filter(p => !p.hidden), nextCursor };
 }
 
 export async function fetchFeedForUser(userId: string, pageSize = 20, cursor?: any) {
@@ -129,7 +129,7 @@ export async function fetchFeedForUser(userId: string, pageSize = 20, cursor?: a
   const snap = await getDocs(q);
   const items = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (PostDocument & { id: string })[];
   const nextCursor = snap.docs.length ? snap.docs[snap.docs.length - 1].data().createdAt : undefined;
-  return { items, nextCursor };
+  return { items: items.filter(p => !p.hidden), nextCursor };
 }
 
 export async function toggleLike(postId: string, userId: string) {
@@ -404,16 +404,56 @@ export async function listArticles(pageSize = 20) {
   return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (ArticleDocument & { id: string })[];
 }
 
-export async function listPostsByTag(tag: string, pageSize = 20) {
-  const q = query(postsCol, where('tags', 'array-contains', tag), orderBy('createdAt', 'desc'), limit(pageSize));
+export async function listPostsByTag(tag: string, pageSize = 20, cursor?: any) {
+  const q = query(postsCol, where('tags', 'array-contains', tag), orderBy('createdAt', 'desc'), limit(pageSize), ...(cursor ? [startAfter(cursor)] : []));
   const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (PostDocument & { id: string })[];
+  const items = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (PostDocument & { id: string })[];
+  const nextCursor = snap.docs.length ? snap.docs[snap.docs.length - 1].data().createdAt : undefined;
+  return { items: items.filter(p => !p.hidden), nextCursor };
 }
 
-export async function listArticlesByTag(tag: string, pageSize = 20) {
-  const q = query(articlesCol, where('tags', 'array-contains', tag), orderBy('createdAt', 'desc'), limit(pageSize));
+export async function listArticlesByTag(tag: string, pageSize = 20, cursor?: any) {
+  const q = query(articlesCol, where('tags', 'array-contains', tag), orderBy('createdAt', 'desc'), limit(pageSize), ...(cursor ? [startAfter(cursor)] : []));
   const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (ArticleDocument & { id: string })[];
+  const items = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (ArticleDocument & { id: string })[];
+  const nextCursor = snap.docs.length ? snap.docs[snap.docs.length - 1].data().createdAt : undefined;
+  return { items: items.filter(a => !a.hidden), nextCursor };
+}
+
+// Moderation helpers
+export async function hidePost(postId: string, hidden: boolean) {
+  await updateDoc(doc(postsCol, postId), { hidden });
+}
+
+export async function hideComment(commentId: string, hidden: boolean) {
+  await updateDoc(doc(commentsCol, commentId), { hidden });
+}
+
+export async function listReports(pageSize = 50) {
+  const q = query(reportsCol, orderBy('createdAt', 'desc'), limit(pageSize));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) }));
+}
+
+export async function resolveReport(reportId: string) {
+  await updateDoc(doc(reportsCol, reportId), { resolved: true });
+}
+
+export async function getCompany(companyId: string) {
+  const s = await getDoc(doc(companiesCol, companyId));
+  return s.exists() ? ({ id: s.id, ...(s.data() as any) }) : null;
+}
+
+export async function listCompanyJobs(companyId: string) {
+  const q = query(jobsCol, where('companyId', '==', companyId), orderBy('createdAt', 'desc'));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) }));
+}
+
+export async function listCompanyEvents(companyId: string) {
+  const q = query(eventsCol, where('organizerId', '==', companyId), orderBy('startAt', 'desc'));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) }));
 }
 
 // Companies
