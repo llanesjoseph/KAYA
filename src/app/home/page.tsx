@@ -9,13 +9,14 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { stories, suggestions } from '@/lib/data';
 import { AuthGuard } from '@/components/auth-guard';
 import { useEffect, useState } from 'react';
-import { fetchFeedForUser, fetchGlobalFeed, followUser } from '@/lib/db';
+import { fetchFeedForUser, fetchGlobalFeed, subscribeNewPosts } from '@/lib/db';
 import type { PostDocument } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 
 export default function HomePage() {
   const [feed, setFeed] = useState<(PostDocument & { id: string })[]>([]);
   const [loading, setLoading] = useState(true);
+  const [newCount, setNewCount] = useState(0);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -30,6 +31,15 @@ export default function HomePage() {
       }
     })();
   }, [user]);
+
+  useEffect(() => {
+    if (feed.length === 0) return;
+    const since = (feed[0] as any).createdAt || new Date();
+    const unsub = subscribeNewPosts(since, (items) => {
+      setNewCount(prev => prev + items.length);
+    });
+    return () => unsub();
+  }, [feed]);
 
   return (
     <AuthGuard>
@@ -78,6 +88,11 @@ export default function HomePage() {
                 <div className="mt-4">Loading feed…</div>
               ) : (
                 <div className="mt-4 space-y-6">
+                  {newCount > 0 && (
+                    <div className="flex justify-center">
+                      <Button variant="outline" size="sm" onClick={() => { setNewCount(0); (async () => { const { items } = user ? await fetchFeedForUser(user.uid, 25) : await fetchGlobalFeed(25); setFeed(items); })(); }}>Load {newCount} new</Button>
+                    </div>
+                  )}
                   {feed.map(post => (
                     <PostCard
                       key={post.id}

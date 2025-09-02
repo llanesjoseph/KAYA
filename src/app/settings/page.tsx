@@ -30,6 +30,7 @@ export default function SettingsPage() {
   const [links, setLinks] = useState<string>('');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [isPrivate, setIsPrivate] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -52,6 +53,7 @@ export default function SettingsPage() {
       roles: roles.split(',').map(s => s.trim()).filter(Boolean),
       expertiseTags: expertise.split(',').map(s => s.trim()).filter(Boolean),
       links: links.split(',').map(s => s.trim()).filter(Boolean).map((url: string) => ({ label: url, url })),
+      private: isPrivate,
     });
   };
   return (
@@ -131,7 +133,7 @@ export default function SettingsPage() {
                       Only approved followers can see your posts.
                     </p>
                   </div>
-                  <Switch id="private-account" />
+                  <Switch id="private-account" checked={isPrivate} onCheckedChange={(v) => setIsPrivate(Boolean(v))} />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>

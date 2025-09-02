@@ -110,6 +110,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                   </DropdownMenuItem>
                 </Link>
               ))}
+              <DropdownMenuSeparator />
+              <Link href="/companies/new"><DropdownMenuItem>Create Company</DropdownMenuItem></Link>
+              <Link href="/events/new"><DropdownMenuItem>Create Event</DropdownMenuItem></Link>
+              <Link href="/jobs/new"><DropdownMenuItem>Create Job</DropdownMenuItem></Link>
                <DropdownMenuSeparator />
                  {bottomNavItems.map(item => (
                 <Link href={item.href} key={item.href}>

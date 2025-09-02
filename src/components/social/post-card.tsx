@@ -23,6 +23,7 @@ import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { addComment } from '@/lib/db';
+import { addReport } from '@/lib/db';
 
 interface PostCardProps {
   post: Post & { authorId?: string };
@@ -35,6 +36,8 @@ export function PostCard({ post }: PostCardProps) {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [following, setFollowing] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReason, setReportReason] = useState('');
 
   useEffect(() => {
     let mounted = true;
@@ -129,7 +132,7 @@ export function PostCard({ post }: PostCardProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem>View Post</DropdownMenuItem>
-            <DropdownMenuItem>Report</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setReportOpen(true)}>Report</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </CardHeader>
@@ -186,6 +189,24 @@ export function PostCard({ post }: PostCardProps) {
           <span>Share</span>
         </Button>
       </CardFooter>
+      <Dialog open={reportOpen} onOpenChange={setReportOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Report content</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Textarea rows={4} placeholder="Reason for reporting" value={reportReason} onChange={(e) => setReportReason(e.target.value)} />
+            <div className="flex justify-end">
+              <Button onClick={async () => {
+                if (!reportReason.trim()) return;
+                await addReport({ type: 'post', refId: post.id, reason: reportReason.trim(), reporterId: user?.uid });
+                setReportReason('');
+                setReportOpen(false);
+              }}>Submit</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
