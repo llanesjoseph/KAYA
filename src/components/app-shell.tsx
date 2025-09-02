@@ -29,6 +29,9 @@ import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/hooks/use-toast';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
+import { Bell } from 'lucide-react';
+import { listNotifications, markAllNotificationsRead } from '@/lib/db';
+import { useEffect, useState } from 'react';
 
 
 const navItems = [
@@ -48,6 +51,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const [notifications, setNotifications] = useState<any[]>([]);
 
   const handleLogout = async () => {
     try {
@@ -66,6 +70,16 @@ export function AppShell({ children }: { children: ReactNode }) {
       });
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      if (!user) return;
+      try {
+        const n = await listNotifications(user.uid, 10);
+        setNotifications(n);
+      } catch {}
+    })();
+  }, [user]);
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -117,6 +131,30 @@ export function AppShell({ children }: { children: ReactNode }) {
               className="w-full rounded-lg bg-card pl-8 md:w-[200px] lg:w-[320px]"
             />
           </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="mr-2">
+                <Bell className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {notifications.length === 0 && (
+                <DropdownMenuItem disabled>No notifications</DropdownMenuItem>
+              )}
+              {notifications.map((n) => (
+                <DropdownMenuItem key={n.id}>{n.type} • {new Date(n.createdAt?.toDate?.() || Date.now()).toLocaleString()}</DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={async () => {
+                if (!user) return;
+                await markAllNotificationsRead(user.uid);
+                const n = await listNotifications(user.uid, 10);
+                setNotifications(n);
+              }}>Mark all read</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button

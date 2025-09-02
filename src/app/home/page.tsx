@@ -1,3 +1,4 @@
+"use client";
 import { AppShell } from '@/components/app-shell';
 import { CreatePostForm } from '@/components/social/create-post-form';
 import { PostCard } from '@/components/social/post-card';
@@ -8,17 +9,19 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { stories, suggestions } from '@/lib/data';
 import { AuthGuard } from '@/components/auth-guard';
 import { useEffect, useState } from 'react';
-import { fetchGlobalFeed } from '@/lib/db';
+import { fetchFeedForUser, fetchGlobalFeed, followUser } from '@/lib/db';
 import type { PostDocument } from '@/lib/types';
+import { useAuth } from '@/context/auth-context';
 
 export default function HomePage() {
   const [feed, setFeed] = useState<(PostDocument & { id: string })[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
     (async () => {
       try {
-        const { items } = await fetchGlobalFeed(25);
+        const { items } = user ? await fetchFeedForUser(user.uid, 25) : await fetchGlobalFeed(25);
         setFeed(items);
       } catch (e) {
         console.error('Failed to load feed', e);
@@ -26,7 +29,7 @@ export default function HomePage() {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [user]);
 
   return (
     <AuthGuard>
@@ -81,6 +84,7 @@ export default function HomePage() {
                       post={{
                         id: post.id,
                         author: { name: post.authorName || 'User', avatarUrl: post.authorPhotoURL || 'https://i.pravatar.cc/128' },
+                        authorId: post.authorId,
                         content: post.content,
                         imageUrl: post.imageUrl,
                         likes: post.likeCount,
