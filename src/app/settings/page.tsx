@@ -18,6 +18,7 @@ import { db } from '@/lib/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { uploadMediaAndGetUrl } from '@/lib/db';
 import { Input as FileInput } from '@/components/ui/input';
+import { CropperDialog } from '@/components/ui/cropper-dialog';
 import { useEffect, useState } from 'react';
 
 export default function SettingsPage() {
@@ -31,6 +32,8 @@ export default function SettingsPage() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [isPrivate, setIsPrivate] = useState(false);
+  const [cropOpen, setCropOpen] = useState(false);
+  const [cropTarget, setCropTarget] = useState<'avatar' | 'banner' | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -80,11 +83,17 @@ export default function SettingsPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>Avatar</Label>
-                  <FileInput type="file" accept="image/*" onChange={(e) => setAvatarFile(e.target.files?.[0] || null)} />
+                  <div className="flex gap-2">
+                    <FileInput type="file" accept="image/*" onChange={(e) => setAvatarFile(e.target.files?.[0] || null)} />
+                    <Button type="button" variant="outline" onClick={() => { if (avatarFile) { setCropTarget('avatar'); setCropOpen(true); } }}>Crop</Button>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label>Banner</Label>
-                  <FileInput type="file" accept="image/*" onChange={(e) => setBannerFile(e.target.files?.[0] || null)} />
+                  <div className="flex gap-2">
+                    <FileInput type="file" accept="image/*" onChange={(e) => setBannerFile(e.target.files?.[0] || null)} />
+                    <Button type="button" variant="outline" onClick={() => { if (bannerFile) { setCropTarget('banner'); setCropOpen(true); } }}>Crop</Button>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
@@ -162,6 +171,16 @@ export default function SettingsPage() {
           </div>
         </div>
       </AppShell>
+      <CropperDialog
+        open={cropOpen}
+        onOpenChange={setCropOpen}
+        file={cropTarget === 'avatar' ? avatarFile : bannerFile}
+        aspect={cropTarget === 'avatar' ? 1 : 3}
+        onCropped={(blob) => {
+          const f = new File([blob], `${cropTarget || 'image'}.jpg`, { type: 'image/jpeg' });
+          if (cropTarget === 'avatar') setAvatarFile(f); else setBannerFile(f);
+        }}
+      />
     </AuthGuard>
   );
 }

@@ -76,13 +76,16 @@ export async function ensureUserProfile(user: { uid: string; displayName: string
   }
 }
 
-export async function createPost(author: { uid: string; displayName: string | null; photoURL: string | null; }, content: string, imageUrl?: string) {
+export async function createPost(author: { uid: string; displayName: string | null; photoURL: string | null; }, content: string, imageUrl?: string, videoUrl?: string, thumbnailUrl?: string) {
   const post: PostDocument = {
     authorId: author.uid,
     authorName: author.displayName,
     authorPhotoURL: author.photoURL,
     content,
     imageUrl,
+    videoUrl,
+    thumbnailUrl,
+    mediaType: videoUrl ? 'video' : imageUrl ? 'image' : undefined,
     createdAt: serverTimestamp(),
     likeCount: 0,
     commentCount: 0,

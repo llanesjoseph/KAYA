@@ -12,6 +12,7 @@ import { Send } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 import { createPost, uploadMediaAndGetUrl } from '@/lib/db';
 import { Input } from '@/components/ui/input';
+import { getVideoThumbnail } from '@/lib/utils';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -51,10 +52,19 @@ export function CreatePostForm() {
         try {
           setPosting(true);
           let imageUrl: string | undefined;
+          let videoUrl: string | undefined;
+          let thumbnailUrl: string | undefined;
           if (file) {
-            imageUrl = await uploadMediaAndGetUrl(file, 'posts');
+            if (file.type.startsWith('video/')) {
+              videoUrl = await uploadMediaAndGetUrl(file, 'posts');
+              const thumbBlob = await getVideoThumbnail(file);
+              const thumbFile = new File([thumbBlob], `${file.name.split('.')[0]}_thumb.jpg`, { type: 'image/jpeg' });
+              thumbnailUrl = await uploadMediaAndGetUrl(thumbFile, 'posts');
+            } else {
+              imageUrl = await uploadMediaAndGetUrl(file, 'posts');
+            }
           }
-          await createPost({ uid: user.uid, displayName: user.displayName, photoURL: user.photoURL }, content, imageUrl);
+          await createPost({ uid: user.uid, displayName: user.displayName, photoURL: user.photoURL }, content, imageUrl, videoUrl, thumbnailUrl);
           setContent('');
           setFile(null);
           formRef.current?.reset();
