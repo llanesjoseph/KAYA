@@ -48,6 +48,7 @@ const companyFollowsCol = collection(db, 'companyFollows');
 const threadsCol = collection(db, 'threads');
 const messagesCol = collection(db, 'messages');
 const notificationsCol = collection(db, 'notifications');
+const reportsCol = collection(db, 'reports');
 const articlesCol = collection(db, 'articles');
 const companiesCol = collection(db, 'companies');
 const eventsCol = collection(db, 'events');
@@ -361,6 +362,20 @@ export function subscribeMessages(threadId: string, onUpdate: (messages: (Messag
     const items = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (MessageDocument & { id: string })[];
     onUpdate(items);
   });
+}
+
+export function subscribeNewPosts(since: any, onAdd: (posts: (PostDocument & { id: string })[]) => void) {
+  const q = query(postsCol, where('createdAt', '>', since), orderBy('createdAt', 'desc'), limit(10));
+  return onSnapshot(q, (snap) => {
+    const items = snap.docChanges()
+      .filter(c => c.type === 'added')
+      .map(c => ({ id: c.doc.id, ...(c.doc.data() as any) })) as (PostDocument & { id: string })[];
+    if (items.length) onAdd(items);
+  });
+}
+
+export async function addReport(data: { type: 'post' | 'comment' | 'user'; refId: string; reason: string; reporterId?: string }) {
+  await addDoc(reportsCol, { ...data, createdAt: serverTimestamp() } as any);
 }
 
 // Articles
