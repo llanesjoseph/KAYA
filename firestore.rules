@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(uid) { return isSignedIn() && request.auth.uid == uid; }
+
+    match /users/{uid} {
+      allow read: if true;
+      allow write: if isOwner(uid);
+    }
+
+    match /posts/{postId} {
+      allow read: if resource == null || resource.data.hidden != true;
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn() && request.auth.uid == resource.data.authorId;
+    }
+
+    match /comments/{commentId} {
+      allow read: if resource == null || resource.data.hidden != true;
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn() && request.auth.uid == resource.data.authorId;
+    }
+
+    match /likes/{likeId} {
+      allow read: if true;
+      allow create, delete: if isSignedIn();
+    }
+
+    match /follows/{followId} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /companyFollows/{id} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /articles/{id} {
+      allow read: if resource == null || resource.data.hidden != true;
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn();
+    }
+
+    match /companies/{id} {
+      allow read: if true;
+      allow create, update, delete: if isSignedIn();
+    }
+
+    match /events/{id} {
+      allow read: if true;
+      allow create, update, delete: if isSignedIn();
+    }
+
+    match /jobs/{id} {
+      allow read: if true;
+      allow create, update, delete: if isSignedIn();
+    }
+
+    match /notifications/{id} {
+      allow read, write: if isSignedIn() && request.auth.uid == resource.data.userId;
+    }
+
+    match /reports/{id} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if false; // restrict reads to backend only
+    }
+  }
+}
+

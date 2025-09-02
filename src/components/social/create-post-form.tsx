@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useEffect, useRef } from 'react';
+import { useActionState, useEffect, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { createPostAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,10 @@ import { ProfilePhoto } from '@/components/ui/profile-photo';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Send } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
+import { createPost, uploadMediaAndGetUrl } from '@/lib/db';
+import { Input } from '@/components/ui/input';
+import { getVideoThumbnail } from '@/lib/utils';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -26,10 +30,14 @@ function SubmitButton() {
 }
 
 export function CreatePostForm() {
-  const initialState = { message: null, errors: {}, success: false };
+  const initialState = { message: null as string | null, errors: {} as any, success: false };
   const [state, dispatch] = useActionState(createPostAction, initialState);
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
+  const { user } = useAuth();
+  const [content, setContent] = useState('');
+  const [posting, setPosting] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (state.message) {
@@ -39,10 +47,37 @@ export function CreatePostForm() {
         variant: state.success ? 'default' : 'destructive',
       });
     }
-    if (state.success) {
-      formRef.current?.reset();
+    if (state.success && user && content && !posting) {
+      (async () => {
+        try {
+          setPosting(true);
+          let imageUrl: string | undefined;
+          let videoUrl: string | undefined;
+          let thumbnailUrl: string | undefined;
+          if (file) {
+            if (file.type.startsWith('video/')) {
+              videoUrl = await uploadMediaAndGetUrl(file, 'posts');
+              const thumbBlob = await getVideoThumbnail(file);
+              const thumbFile = new File([thumbBlob], `${file.name.split('.')[0]}_thumb.jpg`, { type: 'image/jpeg' });
+              thumbnailUrl = await uploadMediaAndGetUrl(thumbFile, 'posts');
+            } else {
+              imageUrl = await uploadMediaAndGetUrl(file, 'posts');
+            }
+          }
+          await createPost({ uid: user.uid, displayName: user.displayName, photoURL: user.photoURL }, content, imageUrl, videoUrl, thumbnailUrl);
+          setContent('');
+          setFile(null);
+          formRef.current?.reset();
+          toast({ title: 'Posted!', description: 'Your post has been published.' });
+        } catch (err) {
+          console.error('Failed to create post:', err);
+          toast({ title: 'Error', description: 'Failed to publish post.', variant: 'destructive' });
+        } finally {
+          setPosting(false);
+        }
+      })();
     }
-  }, [state, toast]);
+  }, [state, toast, user, content, posting]);
 
   return (
     <Card>
@@ -61,7 +96,12 @@ export function CreatePostForm() {
                 className="w-full border-0 bg-transparent p-0 focus-visible:ring-0"
                 rows={3}
                 aria-describedby="content-error"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
               />
+              <div className="mt-2">
+                <Input type="file" accept="image/*,video/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+              </div>
               {state.errors?.content && (
                 <p id="content-error" className="text-sm text-destructive">
                   {state.errors.content[0]}

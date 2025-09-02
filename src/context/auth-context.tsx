@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { ensureUserProfile } from '@/lib/db';
 
 interface AuthContextType {
   user: User | null;
@@ -19,9 +20,12 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       setLoading(false);
+      if (user) {
+        try { await ensureUserProfile({ uid: user.uid, displayName: user.displayName, email: user.email, photoURL: user.photoURL }); } catch {}
+      }
     });
 
     return () => unsubscribe();
