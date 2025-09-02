@@ -19,7 +19,9 @@ import {
   writeBatch,
   runTransaction,
 } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db, storage } from '@/lib/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { extractHashtags } from './utils';
 import type {
   CommentDocument,
   FollowDocument,
@@ -29,6 +31,11 @@ import type {
   PostDocument,
   ThreadDocument,
   UserProfile,
+  ArticleDocument,
+  CompanyDocument,
+  EventDocument,
+  JobDocument,
+  TopicDocument,
 } from './types';
 
 // Collections
@@ -40,6 +47,11 @@ const followsCol = collection(db, 'follows');
 const threadsCol = collection(db, 'threads');
 const messagesCol = collection(db, 'messages');
 const notificationsCol = collection(db, 'notifications');
+const articlesCol = collection(db, 'articles');
+const companiesCol = collection(db, 'companies');
+const eventsCol = collection(db, 'events');
+const jobsCol = collection(db, 'jobs');
+const topicsCol = collection(db, 'topics');
 
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
   const ref = doc(usersCol, userId);
@@ -72,9 +84,18 @@ export async function createPost(author: { uid: string; displayName: string | nu
     createdAt: serverTimestamp(),
     likeCount: 0,
     commentCount: 0,
+    tags: extractHashtags(content),
   };
   const ref = await addDoc(postsCol, post as any);
+  try { await incrementTopicsCounts(post.tags || [], 'post'); } catch {}
   return ref.id;
+}
+
+export async function uploadMediaAndGetUrl(file: File, pathPrefix = 'uploads') {
+  const path = `${pathPrefix}/${Date.now()}_${file.name}`;
+  const r = ref(storage, path);
+  await uploadBytes(r, file);
+  return await getDownloadURL(r);
 }
 
 export async function fetchGlobalFeed(pageSize = 20, cursor?: any) {
@@ -318,5 +339,111 @@ export function subscribeMessages(threadId: string, onUpdate: (messages: (Messag
     const items = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (MessageDocument & { id: string })[];
     onUpdate(items);
   });
+}
+
+// Articles
+export async function createArticle(authorId: string, title: string, content: string, coverUrl?: string, tags: string[] = []) {
+  const normalizedTags = tags.length ? tags : extractHashtags(content);
+  const docRef = await addDoc(articlesCol, {
+    authorId,
+    title,
+    content,
+    coverUrl,
+    tags: normalizedTags,
+    createdAt: serverTimestamp(),
+    likeCount: 0,
+    commentCount: 0,
+  } as ArticleDocument as any);
+  try { await incrementTopicsCounts(normalizedTags, 'article'); } catch {}
+  return docRef.id;
+}
+
+export async function listArticles(pageSize = 20) {
+  const q = query(articlesCol, orderBy('createdAt', 'desc'), limit(pageSize));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (ArticleDocument & { id: string })[];
+}
+
+export async function listPostsByTag(tag: string, pageSize = 20) {
+  const q = query(postsCol, where('tags', 'array-contains', tag), orderBy('createdAt', 'desc'), limit(pageSize));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (PostDocument & { id: string })[];
+}
+
+export async function listArticlesByTag(tag: string, pageSize = 20) {
+  const q = query(articlesCol, where('tags', 'array-contains', tag), orderBy('createdAt', 'desc'), limit(pageSize));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (ArticleDocument & { id: string })[];
+}
+
+// Companies
+export async function createCompany(ownerId: string, name: string, logoUrl?: string, bio?: string, website?: string) {
+  const ref = await addDoc(companiesCol, {
+    ownerId,
+    name,
+    logoUrl,
+    bio,
+    website,
+    followerCount: 0,
+    createdAt: serverTimestamp(),
+  } as CompanyDocument as any);
+  return ref.id;
+}
+
+export async function listCompanies(pageSize = 20) {
+  const q = query(companiesCol, orderBy('createdAt', 'desc'), limit(pageSize));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (CompanyDocument & { id: string })[];
+}
+
+// Events
+export async function createEvent(organizerId: string, data: Omit<EventDocument, 'id' | 'createdAt'>) {
+  const ref = await addDoc(eventsCol, {
+    ...data,
+    organizerId,
+    createdAt: serverTimestamp(),
+  } as any);
+  return ref.id;
+}
+
+export async function listEvents(pageSize = 20) {
+  const q = query(eventsCol, orderBy('startAt', 'asc'), limit(pageSize));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (EventDocument & { id: string })[];
+}
+
+// Jobs
+export async function createJob(companyId: string, title: string, description: string, location?: string) {
+  const ref = await addDoc(jobsCol, {
+    companyId,
+    title,
+    description,
+    location,
+    createdAt: serverTimestamp(),
+  } as JobDocument as any);
+  return ref.id;
+}
+
+export async function listJobs(pageSize = 20) {
+  const q = query(jobsCol, orderBy('createdAt', 'desc'), limit(pageSize));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (JobDocument & { id: string })[];
+}
+
+// Topics (hashtags)
+export async function incrementTopicsCounts(tags: string[], type: 'post' | 'article') {
+  if (tags.length === 0) return;
+  const batch = writeBatch(db);
+  for (const tag of tags) {
+    const id = tag.toLowerCase();
+    const ref = doc(topicsCol, id);
+    batch.set(ref, {
+      name: tag,
+      postCount: type === 'post' ? increment(1) : increment(0),
+      articleCount: type === 'article' ? increment(1) : increment(0),
+      createdAt: serverTimestamp(),
+    } as any, { merge: true });
+  }
+  await batch.commit();
 }
 

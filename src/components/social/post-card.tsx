@@ -134,7 +134,17 @@ export function PostCard({ post }: PostCardProps) {
         </DropdownMenu>
       </CardHeader>
       <CardContent className="px-4 pb-2">
-        <p className="whitespace-pre-wrap">{post.content}</p>
+        <p className="whitespace-pre-wrap">
+          {post.content.split(/(#[\p{L}0-9_]+)/gu).map((part, i) => {
+            if (part.startsWith('#')) {
+              const tag = part.slice(1);
+              return (
+                <a key={i} href={`/topics/${encodeURIComponent(tag)}`} className="text-primary hover:underline">{part}</a>
+              );
+            }
+            return <span key={i}>{part}</span>;
+          })}
+        </p>
         {post.imageUrl && (
           <div className="relative mt-4 aspect-video w-full overflow-hidden rounded-lg border">
             <Image

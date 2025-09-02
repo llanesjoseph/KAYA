@@ -10,7 +10,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Send } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
-import { createPost } from '@/lib/db';
+import { createPost, uploadMediaAndGetUrl } from '@/lib/db';
+import { Input } from '@/components/ui/input';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -35,6 +36,7 @@ export function CreatePostForm() {
   const { user } = useAuth();
   const [content, setContent] = useState('');
   const [posting, setPosting] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (state.message) {
@@ -48,8 +50,13 @@ export function CreatePostForm() {
       (async () => {
         try {
           setPosting(true);
-          await createPost({ uid: user.uid, displayName: user.displayName, photoURL: user.photoURL }, content);
+          let imageUrl: string | undefined;
+          if (file) {
+            imageUrl = await uploadMediaAndGetUrl(file, 'posts');
+          }
+          await createPost({ uid: user.uid, displayName: user.displayName, photoURL: user.photoURL }, content, imageUrl);
           setContent('');
+          setFile(null);
           formRef.current?.reset();
           toast({ title: 'Posted!', description: 'Your post has been published.' });
         } catch (err) {
@@ -82,6 +89,9 @@ export function CreatePostForm() {
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
               />
+              <div className="mt-2">
+                <Input type="file" accept="image/*,video/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+              </div>
               {state.errors?.content && (
                 <p id="content-error" className="text-sm text-destructive">
                   {state.errors.content[0]}

@@ -20,6 +20,7 @@ export type PostDocument = {
   createdAt: any; // Firestore Timestamp
   likeCount: number;
   commentCount: number;
+  tags?: string[];
 };
 
 export type CommentDocument = {
@@ -70,5 +71,57 @@ export type NotificationDocument = {
   read: boolean;
   actorId?: string; // the user who triggered the notification
   meta?: Record<string, unknown>;
+};
+
+export type ArticleDocument = {
+  id?: string;
+  authorId: string;
+  title: string;
+  content: string;
+  coverUrl?: string;
+  createdAt: any;
+  likeCount: number;
+  commentCount: number;
+  tags: string[]; // hashtags/topics
+};
+
+export type CompanyDocument = {
+  id?: string;
+  ownerId: string; // user admin
+  name: string;
+  logoUrl?: string;
+  bio?: string;
+  website?: string;
+  createdAt: any;
+  followerCount: number;
+};
+
+export type EventDocument = {
+  id?: string;
+  organizerId: string; // company or user
+  title: string;
+  description?: string;
+  startAt: any;
+  endAt?: any;
+  location?: string;
+  coverUrl?: string;
+  createdAt: any;
+};
+
+export type JobDocument = {
+  id?: string;
+  companyId: string;
+  title: string;
+  description: string;
+  location?: string;
+  createdAt: any;
+};
+
+export type TopicDocument = {
+  id?: string; // normalized hashtag, e.g. "cannabis-education"
+  name: string; // e.g. "#CannabisEducation"
+  postCount: number;
+  articleCount: number;
+  createdAt: any;
 };
 
