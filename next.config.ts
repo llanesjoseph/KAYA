@@ -1,7 +1,5 @@
-import type {NextConfig} from 'next';
-
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -16,8 +14,21 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
+  transpilePackages: [
+    '@genkit-ai/googleai',
+    'genkit',
+    '@genkit-ai/core',
+    '@genkit-ai/next',
+    '@genkit-ai/firebase',
+  ],
 };
 
 export default nextConfig;

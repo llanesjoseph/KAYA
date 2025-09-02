@@ -1,19 +1,21 @@
-
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { type ReactNode } from 'react';
 import {
   Clapperboard,
   Compass,
   Home,
   MessageCircle,
+  Newspaper,
+  Briefcase,
   Search,
   Settings,
   User,
+  LogOut,
+  ChevronDown
 } from 'lucide-react';
-import { KayaLogo } from '@/components/icons';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { KayaHubLogo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -24,23 +26,23 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarInset,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
-import { cn } from '@/lib/utils';
+import { ProfilePhoto } from '@/components/ui/profile-photo';
+import { useAuth } from '@/context/auth-context';
+import { useToast } from '@/hooks/use-toast';
+import { auth } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
+import { Bell } from 'lucide-react';
+import { listNotifications, markAllNotificationsRead } from '@/lib/db';
+import { useEffect, useState } from 'react';
+
 
 const navItems = [
-  { href: '/', icon: Home, label: 'Home' },
+  { href: '/home', icon: Home, label: 'Home' },
   { href: '/discover', icon: Compass, label: 'Discover' },
+  { href: '/articles', icon: Newspaper, label: 'Articles' },
   { href: '/messages', icon: MessageCircle, label: 'Messages' },
   { href: '/live', icon: Clapperboard, label: 'Live' },
+  { href: '/jobs', icon: Briefcase, label: 'Jobs' },
 ];
 
 const bottomNavItems = [
@@ -50,56 +52,85 @@ const bottomNavItems = [
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+  const [notifications, setNotifications] = useState<any[]>([]);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: 'Signed Out',
+        description: 'You have been successfully signed out.',
+      });
+      router.push('/login');
+    } catch (error) {
+      console.error('Error signing out: ', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to sign out. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      if (!user) return;
+      try {
+        const n = await listNotifications(user.uid, 10);
+        setNotifications(n);
+      } catch {}
+    })();
+  }, [user]);
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      <Sidebar side="left" variant="sidebar" collapsible="icon">
-        <SidebarHeader className="border-b">
-          <Link href="/" className="flex items-center gap-2">
-            <KayaLogo className="h-8 w-auto" />
-            <span className="font-headline text-xl font-bold sr-only group-data-[state=expanded]:not-sr-only">
-              Kaya
-            </span>
-          </Link>
-        </SidebarHeader>
-        <SidebarContent className="p-2">
-          <SidebarMenu>
-            {navItems.map(item => (
-              <SidebarMenuItem key={item.href}>
-                <Link href={item.href} passHref legacyBehavior>
-                  <SidebarMenuButton
-                    isActive={pathname === item.href}
-                    tooltip={item.label}
-                  >
-                    <item.icon />
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:px-6">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="flex items-center gap-2"
+              >
+                <KayaHubLogo className="h-8 w-auto" />
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuLabel>Navigation</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {navItems.map(item => (
+                <Link href={item.href} key={item.href}>
+                  <DropdownMenuItem>
+                    <item.icon className="mr-2 h-4 w-4" />
                     <span>{item.label}</span>
-                  </SidebarMenuButton>
+                  </DropdownMenuItem>
                 </Link>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarContent>
-        <SidebarContent className="p-2 mt-auto border-t">
-          <SidebarMenu>
-            {bottomNavItems.map(item => (
-              <SidebarMenuItem key={item.href}>
-                <Link href={item.href} passHref legacyBehavior>
-                  <SidebarMenuButton
-                    isActive={pathname === item.href}
-                    tooltip={item.label}
-                  >
-                    <item.icon />
+              ))}
+              <DropdownMenuSeparator />
+              <Link href="/companies/new"><DropdownMenuItem>Create Company</DropdownMenuItem></Link>
+              <Link href="/events/new"><DropdownMenuItem>Create Event</DropdownMenuItem></Link>
+              <Link href="/jobs/new"><DropdownMenuItem>Create Job</DropdownMenuItem></Link>
+               <DropdownMenuSeparator />
+                 {bottomNavItems.map(item => (
+                <Link href={item.href} key={item.href}>
+                  <DropdownMenuItem>
+                    <item.icon className="mr-2 h-4 w-4" />
                     <span>{item.label}</span>
-                  </SidebarMenuButton>
+                  </DropdownMenuItem>
                 </Link>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarContent>
-      </Sidebar>
-      <SidebarInset>
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-          <SidebarTrigger className="sm:hidden" />
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <div className="relative ml-auto flex-1 md:grow-0">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -110,33 +141,63 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="overflow-hidden rounded-full"
-              >
-                <Avatar>
-                  <AvatarImage
-                    src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                    alt="User"
-                    data-ai-hint="user avatar"
-                  />
-                  <AvatarFallback>U</AvatarFallback>
-                </Avatar>
+              <Button variant="ghost" size="icon" className="mr-2">
+                <Bell className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>Notifications</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
+              {notifications.length === 0 && (
+                <DropdownMenuItem disabled>No notifications</DropdownMenuItem>
+              )}
+              {notifications.map((n) => (
+                <DropdownMenuItem key={n.id}>{n.type} • {new Date(n.createdAt?.toDate?.() || Date.now()).toLocaleString()}</DropdownMenuItem>
+              ))}
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem onClick={async () => {
+                if (!user) return;
+                await markAllNotificationsRead(user.uid);
+                const n = await listNotifications(user.uid, 10);
+                setNotifications(n);
+              }}>Mark all read</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="overflow-hidden rounded-full"
+                disabled={loading || !user}
+              >
+                <ProfilePhoto
+                  imageUrl={user?.photoURL || "https://i.pravatar.cc/150?u=a042581f4e29026704d"}
+                  alt={user?.displayName || "User"}
+                  size={32}
+                />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>{user?.displayName || 'My Account'}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <Link href="/profile">
+                <DropdownMenuItem>Profile</DropdownMenuItem>
+              </Link>
+              <Link href="/settings">
+                <DropdownMenuItem>Settings</DropdownMenuItem>
+              </Link>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <div className="flex-1 overflow-auto">{children}</div>
-      </SidebarInset>
+        <main className="flex-1 overflow-auto p-4">
+          <div className="container mx-auto h-full">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

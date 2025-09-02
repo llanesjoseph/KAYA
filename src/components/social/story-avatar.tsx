@@ -1,5 +1,5 @@
-import Image from 'next/image';
 import type { Story } from '@/lib/data';
+import { ProfilePhoto } from '@/components/ui/profile-photo';
 
 interface StoryAvatarProps {
   story: Story;
@@ -8,18 +8,12 @@ interface StoryAvatarProps {
 export function StoryAvatar({ story }: StoryAvatarProps) {
   return (
     <div className="flex flex-col items-center space-y-2">
-      <div className="relative rounded-full p-1 bg-gradient-to-br from-purple-500 to-pink-500">
-        <div className="rounded-full bg-background p-0.5">
-          <Image
-            src={story.user.avatarUrl}
-            alt={story.user.name}
-            width={64}
-            height={64}
-            className="rounded-full object-cover"
-            data-ai-hint="user avatar"
-          />
-        </div>
-      </div>
+      <ProfilePhoto 
+        imageUrl={story.user.avatarUrl}
+        alt={story.user.name}
+        size={100}
+        borderWidth={4}
+      />
       <p className="text-xs font-medium">{story.user.name}</p>
     </div>
   );

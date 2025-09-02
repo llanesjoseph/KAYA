@@ -2,8 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Kaya Hub Design System */
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'JetBrains Mono', monospace;
+  background: linear-gradient(135deg, 
+    #2a1f18 0%,     /* deep winter */
+    #332620 15%,    /* late winter */
+    #3a2f26 30%,    /* thaw beginning */
+    #42362a 45%,    /* mud season */
+    #4a3d2f 60%,    /* earth warming */
+    #526650 75%,    /* first green hints */
+    #5a735a 90%,    /* spring emerging */
+    #628066 100%    /* spring promise */
+  );
+  min-height: 100vh;
+  color: #a8a089;
 }
 
 @layer base {
@@ -14,19 +27,19 @@ body {
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 256 52% 52%;
+    --primary: 175 80% 35%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 84% 4.9%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 217 91% 60.2%;
+    --accent: 180 70% 45%;
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 18 43% 44%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
+    --border: 100 6% 59%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 256 52% 52%;
+    --ring: 175 80% 35%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -35,7 +48,7 @@ body {
     --radius: 0.5rem;
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222.2 84% 4.9%;
-    --sidebar-primary: 256 52% 52%;
+    --sidebar-primary: 175 80% 35%;
     --sidebar-primary-foreground: 210 40% 98%;
     --sidebar-accent: 210 40% 96.1%;
     --sidebar-accent-foreground: 222.2 84% 4.9%;
@@ -43,38 +56,236 @@ body {
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 256 52% 52%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217 91% 60.2%;
+    --background: 220 13% 11%; /* Dark Slate Gray */
+    --foreground: 60 30% 96.1%; /* Bone White */
+    --card: 220 13% 18%; /* Darker Card */
+    --card-foreground: 60 30% 96.1%;
+    --popover: 220 13% 11%;
+    --popover-foreground: 60 30% 96.1%;
+    --primary: 175 80% 35%; /* Teal Primary */
+    --primary-foreground: 60 30% 96.1%;
+    --secondary: 100 6% 59%;
+    --secondary-foreground: 60 30% 96.1%;
+    --muted: 100 6% 59%;
+    --muted-foreground: 220 10% 60%; 
+    --accent: 180 70% 45%; /* Teal Accent */
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 217 91% 60.2%;
+    --destructive: 18 43% 44%; /* #B86A49 - Terracotta */
+    --destructive-foreground: 60 30% 96.1%;
+    --border: 220 13% 30%;
+    --input: 220 13% 30%;
+    --ring: 175 80% 35%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --sidebar-background: 222.2 84% 4.9%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 256 52% 52%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 217.2 32.6% 17.5%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217.2 32.6% 17.5%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 0 0% 10%;
+    --sidebar-foreground: 60 33% 93%;
+    --sidebar-primary: 175 80% 35%;
+    --sidebar-primary-foreground: 60 33% 93%;
+    --sidebar-accent: 100 6% 15%;
+    --sidebar-accent-foreground: 60 33% 93%;
+    --sidebar-border: 100 6% 25%;
+    --sidebar-ring: 175 80% 35%;
+  }
+}
+
+/* Kaya Hub Component Styles */
+@layer components {
+  /* Typography System */
+  .heading-primary {
+    @apply font-serif text-4xl font-semibold tracking-wide text-text-winter-headline;
+  }
+  
+  .heading-winter {
+    @apply text-text-winter-headline;
+  }
+  
+  .heading-spring {
+    @apply text-text-spring-headline;
+  }
+  
+  .heading-secondary {
+    @apply font-serif text-2xl font-normal italic tracking-wide;
+  }
+  
+  .text-body {
+    @apply font-mono text-base leading-relaxed tracking-wide;
+  }
+  
+  .text-small {
+    @apply font-mono text-sm tracking-wider;
+  }
+  
+  .text-label {
+    @apply font-serif font-semibold text-base tracking-wide;
+  }
+
+  /* Button System */
+  .btn {
+    @apply px-6 py-3 border border-solid bg-transparent font-mono font-normal tracking-wide text-sm rounded-kaya-sm cursor-pointer transition-all duration-300 relative overflow-hidden;
+  }
+  
+  .btn::before {
+    content: '';
+    @apply absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-all duration-500;
+  }
+  
+  .btn:hover::before {
+    @apply left-full;
+  }
+  
+  .btn-primary {
+    @apply border-thaw-brown/60 text-thaw-brown/90;
+  }
+  
+  .btn-primary:hover {
+    @apply bg-thaw-brown/10 border-early-growth/80 text-early-growth -translate-y-0.5;
+  }
+  
+  .btn-secondary {
+    @apply border-winter-bark/60 text-winter-bark/90;
+  }
+  
+  .btn-secondary:hover {
+    @apply bg-winter-bark/10 border-dead-leaves/80 text-dead-leaves -translate-y-0.5;
+  }
+
+  /* Card System */
+  .card {
+    @apply bg-black/20 border border-a8a089/20 rounded-kaya-md p-7 my-5 transition-all duration-300 relative;
+  }
+  
+  .card-winter {
+    @apply bg-winter-bark/20 border-l-4 border-l-winter-bark;
+  }
+  
+  .card-spring {
+    @apply bg-new-shoots/20 border-l-4 border-l-new-shoots;
+  }
+  
+  .card-transition {
+    @apply bg-gradient-to-br from-winter-bark/20 to-new-shoots/20 border-l-4 border-l-transparent;
+    border-image: linear-gradient(180deg, #4c4134, #628066) 1;
+  }
+  
+  .card:hover {
+    @apply -translate-y-0.5 bg-new-shoots/10;
+  }
+
+  /* Form System */
+  .form-control {
+    @apply w-full p-3.5 bg-black/30 border border-a8a089/30 text-text-winter font-mono text-sm rounded-kaya-sm transition-all duration-300;
+  }
+  
+  .form-control:focus {
+    @apply outline-none border-early-growth/60 bg-winter-bark/40 shadow-[0_0_0_2px_rgba(107,122,95,0.1)];
+  }
+  
+  .form-control::placeholder {
+    @apply text-a8a089/40 italic;
+  }
+  
+  .form-label {
+    @apply font-serif text-text-winter-headline block mb-2 font-semibold text-base tracking-wide;
+  }
+
+  /* Navigation System */
+  .nav {
+    @apply flex bg-black/20 border border-a8a089/20 p-4 rounded-kaya-sm gap-2 flex-wrap;
+  }
+  
+  .nav-item {
+    @apply text-a8a089/80 no-underline px-4 py-2.5 border border-transparent transition-all duration-300 font-mono tracking-wide text-sm rounded-kaya-sm relative;
+  }
+  
+  .nav-item::after {
+    content: '';
+    @apply absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-px bg-early-growth/60 transition-all duration-300;
+  }
+  
+  .nav-item:hover::after,
+  .nav-item.active::after {
+    @apply w-4/5;
+  }
+  
+  .nav-item:hover,
+  .nav-item.active {
+    @apply border-a8a089/30 text-text-winter-headline bg-thaw-brown/8;
+  }
+
+  /* Badge System */
+  .badge {
+    @apply bg-transparent text-early-growth/80 border border-early-growth/40 px-3 py-1.5 text-xs font-mono tracking-wide mx-1 mb-1 inline-block rounded-kaya-sm transition-all duration-300;
+  }
+  
+  .badge:hover {
+    @apply bg-early-growth/10 border-early-growth/60 text-early-growth -translate-y-0.5;
+  }
+  
+  .badge-winter {
+    @apply border-winter-bark/50 text-winter-bark/80;
+  }
+  
+  .badge-winter:hover {
+    @apply bg-winter-bark/10 text-winter-bark border-winter-bark/70;
+  }
+  
+  .badge-spring {
+    @apply border-spring-moss/50 text-spring-moss/80;
+  }
+  
+  .badge-spring:hover {
+    @apply bg-spring-moss/10 text-spring-moss border-spring-moss/70;
+  }
+
+  /* Section System */
+  .section-winter {
+    @apply bg-winter-bark/20 border-l-4 border-l-winter-bark;
+  }
+  
+  .section-transition {
+    @apply bg-gradient-to-br from-winter-bark/20 via-wet-earth/20 to-early-growth/20 border-l-4 border-l-transparent;
+    border-image: linear-gradient(180deg, #4c4134 0%, #526650 100%) 1;
+  }
+  
+  .section-spring {
+    @apply bg-new-shoots/15 border-l-4 border-l-new-shoots;
+  }
+
+  /* Atmospheric Effects */
+  .seasonal-overlay {
+    background: 
+      radial-gradient(circle at 10% 90%, rgba(90, 115, 90, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 90% 10%, rgba(76, 65, 52, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(98, 128, 102, 0.12) 0%, transparent 60%);
+    animation: spring-awakening 25s ease-in-out infinite;
+  }
+  
+  .spring-glow {
+    background: 
+      radial-gradient(circle at 20% 80%, rgba(98, 128, 102, 0.1) 0%, transparent 30%),
+      radial-gradient(circle at 80% 20%, rgba(106, 140, 110, 0.08) 0%, transparent 40%);
+    animation: spring-glow 8s ease-in-out infinite;
+  }
+
+  /* Utility Classes */
+  .hover-lift:hover {
+    @apply -translate-y-0.5 transition-transform duration-300;
+  }
+  
+  .shimmer {
+    @apply relative overflow-hidden;
+  }
+  
+  .shimmer::before {
+    content: '';
+    @apply absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-all duration-500;
+  }
+  
+  .shimmer:hover::before {
+    @apply left-full;
   }
 }
 

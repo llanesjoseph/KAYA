@@ -58,3 +58,41 @@ export async function createPostAction(
     };
   }
 }
+
+const articleSchema = z.object({
+  title: z.string().min(1, { message: 'Title is required.' }).max(120, { message: 'Title must be 120 characters or less.' }),
+  content: z.string().min(50, { message: 'Article must be at least 50 characters.' }),
+});
+
+export async function createArticleAction(
+  prevState: any,
+  formData: FormData
+) {
+  const validated = articleSchema.safeParse({
+    title: formData.get('title'),
+    content: formData.get('content'),
+  });
+  if (!validated.success) {
+    return {
+      errors: validated.error.flatten().fieldErrors,
+      message: null,
+      success: false,
+    };
+  }
+  const { title, content } = validated.data;
+  try {
+    const moderationResult = await moderateContent({
+      text: `${title}\n\n${content}`,
+      authorId: 'user-123-kaya',
+      contentType: 'post',
+    });
+    if (!moderationResult.isAppropriate) {
+      return { errors: {}, message: `Article blocked: ${moderationResult.reason}`, success: false };
+    }
+    revalidatePath('/articles');
+    return { errors: {}, message: 'Article approved.', success: true };
+  } catch (e) {
+    console.error(e);
+    return { errors: {}, message: 'Unexpected error. Try again.', success: false };
+  }
+}

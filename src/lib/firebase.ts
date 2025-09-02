@@ -10,7 +10,7 @@ import { getStorage } from "firebase/storage";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
- 
+
 };
 
 // Initialize Firebase
@@ -20,4 +20,4 @@ const auth = getAuth(app);
 const storage = getStorage(app);
 const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
 
-export { app, db, auth, storage, analytics };
+
