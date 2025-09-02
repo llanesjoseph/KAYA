@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useEffect, useRef } from 'react';
+import { useActionState, useEffect, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { createPostAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,8 @@ import { ProfilePhoto } from '@/components/ui/profile-photo';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Send } from 'lucide-react';
+import { useAuth } from '@/context/auth-context';
+import { createPost } from '@/lib/db';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -26,10 +28,13 @@ function SubmitButton() {
 }
 
 export function CreatePostForm() {
-  const initialState = { message: null, errors: {}, success: false };
+  const initialState = { message: null as string | null, errors: {} as any, success: false };
   const [state, dispatch] = useActionState(createPostAction, initialState);
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
+  const { user } = useAuth();
+  const [content, setContent] = useState('');
+  const [posting, setPosting] = useState(false);
 
   useEffect(() => {
     if (state.message) {
@@ -39,10 +44,23 @@ export function CreatePostForm() {
         variant: state.success ? 'default' : 'destructive',
       });
     }
-    if (state.success) {
-      formRef.current?.reset();
+    if (state.success && user && content && !posting) {
+      (async () => {
+        try {
+          setPosting(true);
+          await createPost({ uid: user.uid, displayName: user.displayName, photoURL: user.photoURL }, content);
+          setContent('');
+          formRef.current?.reset();
+          toast({ title: 'Posted!', description: 'Your post has been published.' });
+        } catch (err) {
+          console.error('Failed to create post:', err);
+          toast({ title: 'Error', description: 'Failed to publish post.', variant: 'destructive' });
+        } finally {
+          setPosting(false);
+        }
+      })();
     }
-  }, [state, toast]);
+  }, [state, toast, user, content, posting]);
 
   return (
     <Card>
@@ -61,6 +79,8 @@ export function CreatePostForm() {
                 className="w-full border-0 bg-transparent p-0 focus-visible:ring-0"
                 rows={3}
                 aria-describedby="content-error"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
               />
               {state.errors?.content && (
                 <p id="content-error" className="text-sm text-destructive">
