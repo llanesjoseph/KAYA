@@ -159,6 +159,13 @@ export function PostCard({ post }: PostCardProps) {
             />
           </div>
         )}
+        {(!post.imageUrl && (post as any).videoUrl) && (
+          <div className="relative mt-4 aspect-video w-full overflow-hidden rounded-lg border">
+            <video controls poster={(post as any).thumbnailUrl} className="w-full h-full object-cover">
+              <source src={(post as any).videoUrl} />
+            </video>
+          </div>
+        )}
       </CardContent>
       <CardFooter className="flex justify-between p-2">
         <Button variant="ghost" className={`flex items-center gap-2 ${liked ? 'text-red-500' : ''}`} onClick={onToggleLike}>

@@ -21,6 +21,9 @@ export type PostDocument = {
   authorPhotoURL: string | null;
   content: string;
   imageUrl?: string;
+  videoUrl?: string;
+  thumbnailUrl?: string; // for videos
+  mediaType?: 'image' | 'video';
   createdAt: any; // Firestore Timestamp
   likeCount: number;
   commentCount: number;
