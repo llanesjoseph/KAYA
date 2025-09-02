@@ -28,6 +28,7 @@ export type PostDocument = {
   likeCount: number;
   commentCount: number;
   tags?: string[];
+  hidden?: boolean;
 };
 
 export type CommentDocument = {
@@ -38,6 +39,7 @@ export type CommentDocument = {
   authorPhotoURL: string | null;
   content: string;
   createdAt: any; // Firestore Timestamp
+  hidden?: boolean;
 };
 
 export type FollowDocument = {
@@ -90,6 +92,7 @@ export type ArticleDocument = {
   likeCount: number;
   commentCount: number;
   tags: string[]; // hashtags/topics
+  hidden?: boolean;
 };
 
 export type CompanyDocument = {
