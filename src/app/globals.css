@@ -154,7 +154,7 @@ body {
 
   /* Card System */
   .card {
-    @apply bg-black/20 border border-a8a089/20 rounded-kaya-md p-7 my-5 transition-all duration-300 relative;
+    @apply bg-black/20 border border-text-winter/20 rounded-kaya-md p-7 my-5 transition-all duration-300 relative;
   }
   
   .card-winter {
@@ -176,7 +176,7 @@ body {
 
   /* Form System */
   .form-control {
-    @apply w-full p-3.5 bg-black/30 border border-a8a089/30 text-text-winter font-mono text-sm rounded-kaya-sm transition-all duration-300;
+    @apply w-full p-3.5 bg-black/30 border border-text-winter/30 text-text-winter font-mono text-sm rounded-kaya-sm transition-all duration-300;
   }
   
   .form-control:focus {
@@ -184,7 +184,7 @@ body {
   }
   
   .form-control::placeholder {
-    @apply text-a8a089/40 italic;
+    @apply text-text-winter/40 italic;
   }
   
   .form-label {
@@ -193,11 +193,11 @@ body {
 
   /* Navigation System */
   .nav {
-    @apply flex bg-black/20 border border-a8a089/20 p-4 rounded-kaya-sm gap-2 flex-wrap;
+    @apply flex bg-black/20 border border-text-winter/20 p-4 rounded-kaya-sm gap-2 flex-wrap;
   }
   
   .nav-item {
-    @apply text-a8a089/80 no-underline px-4 py-2.5 border border-transparent transition-all duration-300 font-mono tracking-wide text-sm rounded-kaya-sm relative;
+    @apply text-text-winter/80 no-underline px-4 py-2.5 border border-transparent transition-all duration-300 font-mono tracking-wide text-sm rounded-kaya-sm relative;
   }
   
   .nav-item::after {
@@ -212,7 +212,7 @@ body {
   
   .nav-item:hover,
   .nav-item.active {
-    @apply border-a8a089/30 text-text-winter-headline bg-thaw-brown/8;
+    @apply border-text-winter/30 text-text-winter-headline bg-thaw-brown/20;
   }
 
   /* Badge System */

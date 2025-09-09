@@ -7,6 +7,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
@@ -31,6 +32,8 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
+  const [showResetSuccess, setShowResetSuccess] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
@@ -81,6 +84,7 @@ export default function LoginPage() {
       const userDoc = await getDoc(userDocRef);
 
       if (!userDoc.exists()) {
+        // For new Google users, redirect to age verification
         await setDoc(userDocRef, {
           uid: user.uid,
           displayName: user.displayName,
@@ -88,12 +92,23 @@ export default function LoginPage() {
           photoURL: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
           bio: '',
           createdAt: new Date(),
+          needsAgeVerification: true,
         });
+        
+        router.push('/verify-age');
+        return;
+      }
+      
+      // Existing user - check if they need age verification
+      const userData = userDoc.data();
+      if (userData.needsAgeVerification) {
+        router.push('/verify-age');
+        return;
       }
       
       toast({
         title: 'Signed In!',
-        description: 'Welcome to Kaya! Redirecting you to the homepage.',
+        description: 'Welcome back to Kaya! Redirecting you to the homepage.',
       });
       router.push('/home');
 
@@ -106,6 +121,31 @@ export default function LoginPage() {
       }
     } finally {
       setGoogleLoading(false);
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    if (!email) {
+      setError('Please enter your email address first.');
+      return;
+    }
+    
+    setError(null);
+    setResetLoading(true);
+    setShowResetSuccess(false);
+    
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setShowResetSuccess(true);
+    } catch (error: any) {
+      if (error.code === 'auth/user-not-found') {
+        setError('No account found with this email address.');
+      } else {
+        setError('Failed to send password reset email. Please try again.');
+      }
+      console.error('Password reset error:', error);
+    } finally {
+      setResetLoading(false);
     }
   };
 
@@ -135,6 +175,13 @@ export default function LoginPage() {
               <Alert variant="destructive" className="mb-4">
                 <AlertTitle>Error</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            {showResetSuccess && (
+              <Alert className="mb-4">
+                <AlertDescription>
+                  Password reset email sent! Check your inbox for reset instructions.
+                </AlertDescription>
               </Alert>
             )}
             <form onSubmit={handleSignIn} className="space-y-4">
@@ -168,7 +215,20 @@ export default function LoginPage() {
                 {googleLoading ? 'Signing In...' : 'Sign In with Google'}
               </Button>
             </form>
+            
             <div className="mt-4 text-center text-sm">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handlePasswordReset}
+                disabled={resetLoading || loading || googleLoading}
+                className="text-xs"
+              >
+                {resetLoading ? 'Sending...' : 'Forgot password?'}
+              </Button>
+            </div>
+            
+            <div className="mt-2 text-center text-sm">
               Don&apos;t have an account?{' '}
               <Link href="/signup" className="underline">
                 Sign up

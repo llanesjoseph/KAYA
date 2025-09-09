@@ -27,7 +27,11 @@ service cloud.firestore {
     }
 
     match /follows/{followId} {
-      allow read, write: if isSignedIn();
+      allow read: if isSignedIn();
+      // Only allow creating/deleting follows where the caller is the follower
+      allow create: if isSignedIn() && request.resource.data.followerId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.followerId == request.auth.uid;
+      allow update: if false; // follows are immutable except delete
     }
 
     match /companyFollows/{id} {
@@ -62,6 +66,59 @@ service cloud.firestore {
     match /reports/{id} {
       allow create: if isSignedIn();
       allow read, update, delete: if false; // restrict reads to backend only
+    }
+
+    // Live streaming collections
+    match /streams/{streamId} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && request.auth.uid == resource.data.streamerId;
+      allow delete: if isSignedIn() && request.auth.uid == resource.data.streamerId;
+    }
+
+    match /streamMessages/{messageId} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn() && request.auth.uid == resource.data.userId;
+    }
+
+    match /streamViewers/{viewerId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // Strain database collections
+    match /strains/{strainId} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && (request.auth.uid == resource.data.createdBy || resource.data.verified == false);
+      allow delete: if isSignedIn() && request.auth.uid == resource.data.createdBy;
+    }
+
+    match /strainReviews/{reviewId} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn() && request.auth.uid == resource.data.userId;
+    }
+
+    match /userStrainLists/{listId} {
+      allow read: if resource.data.isPublic == true || (isSignedIn() && request.auth.uid == resource.data.userId);
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn() && request.auth.uid == resource.data.userId;
+    }
+
+    // Topics/hashtags
+    match /topics/{topicId} {
+      allow read: if true;
+      allow write: if isSignedIn(); // Allow updating counts
+    }
+
+    // Messages and threads
+    match /threads/{threadId} {
+      allow read, write: if isSignedIn() && request.auth.uid in resource.data.participantIds;
+    }
+
+    match /messages/{messageId} {
+      allow read, write: if isSignedIn();
     }
   }
 }

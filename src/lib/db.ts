@@ -1,5 +1,6 @@
 import {
   addDoc,
+  deleteDoc,
   arrayUnion,
   collection,
   doc,
@@ -130,6 +131,28 @@ export async function fetchFeedForUser(userId: string, pageSize = 20, cursor?: a
   const items = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (PostDocument & { id: string })[];
   const nextCursor = snap.docs.length ? snap.docs[snap.docs.length - 1].data().createdAt : undefined;
   return { items: items.filter(p => !p.hidden), nextCursor };
+}
+
+export async function listPostsByAuthor(authorId: string, pageSize = 20, cursor?: any) {
+  const q = query(
+    postsCol,
+    where('authorId', '==', authorId),
+    orderBy('createdAt', 'desc'),
+    limit(pageSize),
+    ...(cursor ? [startAfter(cursor)] : [])
+  );
+  const snap = await getDocs(q);
+  const items = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (PostDocument & { id: string })[];
+  const nextCursor = snap.docs.length ? snap.docs[snap.docs.length - 1].data().createdAt : undefined;
+  return { items: items.filter(p => !p.hidden), nextCursor };
+}
+
+export async function getFollowCounts(userId: string): Promise<{ followers: number; following: number; }>
+{
+  const followersQ = query(followsCol, where('followingId', '==', userId));
+  const followingQ = query(followsCol, where('followerId', '==', userId));
+  const [followersSnap, followingSnap] = await Promise.all([getDocs(followersQ), getDocs(followingQ)]);
+  return { followers: followersSnap.size, following: followingSnap.size };
 }
 
 export async function toggleLike(postId: string, userId: string) {
@@ -345,6 +368,57 @@ export async function markAllNotificationsRead(userId: string) {
   await batch.commit();
 }
 
+export function subscribeNotifications(userId: string, onUpdate: (items: (NotificationDocument & { id: string })[]) => void, pageSize = 20) {
+  // Temporarily disabled until Firestore indexes are deployed to prevent console errors
+  // TODO: Re-enable after running: firebase deploy --only firestore:indexes
+  onUpdate([]);
+  return () => {}; // Return empty unsubscribe function
+  
+  /* 
+  const q = query(notificationsCol, where('userId', '==', userId), orderBy('createdAt', 'desc'), limit(pageSize));
+  return onSnapshot(q, (snap) => {
+    const items = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (NotificationDocument & { id: string })[];
+    onUpdate(items);
+  });
+  */
+}
+
+export function subscribeUnreadCount(userId: string, onUpdate: (count: number) => void, cap = 200) {
+  // Temporarily disabled until Firestore indexes are deployed to prevent console errors
+  // TODO: Re-enable after running: firebase deploy --only firestore:indexes
+  onUpdate(0);
+  return () => {}; // Return empty unsubscribe function
+  
+  /*
+  const q = query(notificationsCol, where('userId', '==', userId), where('read', '==', false), limit(cap));
+  return onSnapshot(q, (snap) => {
+    onUpdate(snap.size);
+  });
+  */
+}
+
+export async function listNotificationsPaged(userId: string, pageSize = 20, cursor?: any) {
+  const q = query(
+    notificationsCol,
+    where('userId', '==', userId),
+    orderBy('createdAt', 'desc'),
+    limit(pageSize),
+    ...(cursor ? [startAfter(cursor)] : [])
+  );
+  const snap = await getDocs(q);
+  const items = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (NotificationDocument & { id: string })[];
+  const nextCursor = snap.docs.length ? snap.docs[snap.docs.length - 1].data().createdAt : undefined;
+  return { items, nextCursor };
+}
+
+export async function markNotificationRead(notificationId: string) {
+  await updateDoc(doc(notificationsCol, notificationId), { read: true });
+}
+
+export async function deleteNotification(notificationId: string) {
+  await deleteDoc(doc(notificationsCol, notificationId));
+}
+
 export async function searchUsersByNamePrefix(prefix: string, pageSize = 20) {
   const end = prefix + '\uf8ff';
   const q = query(usersCol, orderBy('displayName'), where('displayName', '>=', prefix), where('displayName', '<=', end), limit(pageSize));
@@ -357,6 +431,46 @@ export async function searchPostsByContentPrefix(prefix: string, pageSize = 20) 
   const q = query(postsCol, orderBy('content'), where('content', '>=', prefix), where('content', '<=', end), limit(pageSize));
   const snap = await getDocs(q);
   return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (PostDocument & { id: string })[];
+}
+
+export async function suggestUsersToFollow(userId: string, pageSize = 5) {
+  const followsQ = query(followsCol, where('followerId', '==', userId));
+  const followsSnap = await getDocs(followsQ);
+  const followingIds = new Set<string>(followsSnap.docs.map(d => (d.data() as FollowDocument).followingId));
+  followingIds.add(userId);
+  const usersQ = query(usersCol, orderBy('createdAt', 'desc'), limit(50));
+  const usersSnap = await getDocs(usersQ);
+  const candidates = usersSnap.docs.map(d => ({ uid: d.id, ...(d.data() as any) } as UserProfile));
+  const suggestions = candidates.filter(u => !followingIds.has(u.uid)).slice(0, pageSize);
+  return suggestions;
+}
+
+export async function suggestUsersSmart(userId: string, pageSize = 5) {
+  const myProfile = await getUserProfile(userId);
+  const myTags = new Set<string>((myProfile?.expertiseTags || []).map(t => t.toLowerCase()));
+  const fSnap = await getDocs(query(followsCol, where('followerId', '==', userId)));
+  const followingIds = fSnap.docs.map(d => (d.data() as FollowDocument).followingId);
+  const exclude = new Set<string>([userId, ...followingIds]);
+  let fofIds: string[] = [];
+  if (followingIds.length) {
+    const fofSnap = await getDocs(query(followsCol, where('followerId', 'in', followingIds.slice(0, 10))));
+    fofIds = fofSnap.docs.map(d => (d.data() as FollowDocument).followingId);
+  }
+  const uniqueCandidateIds = Array.from(new Set<string>(fofIds)).filter(id => !exclude.has(id));
+  const usersQ = query(usersCol, orderBy('createdAt', 'desc'), limit(100));
+  const usersSnap = await getDocs(usersQ);
+  const candidates = usersSnap.docs
+    .map(d => ({ uid: d.id, ...(d.data() as any) } as UserProfile))
+    .filter(u => !exclude.has(u.uid));
+  const scored = candidates.map(u => {
+    const tags = (u.expertiseTags || []).map(t => t.toLowerCase());
+    const overlap = tags.filter(t => myTags.has(t)).length;
+    const fofBoost = uniqueCandidateIds.includes(u.uid) ? 1 : 0;
+    const score = overlap * 2 + fofBoost;
+    return { u, score };
+  });
+  scored.sort((a, b) => b.score - a.score);
+  return scored.slice(0, pageSize).map(s => s.u);
 }
 
 export function subscribeMessages(threadId: string, onUpdate: (messages: (MessageDocument & { id: string })[]) => void) {

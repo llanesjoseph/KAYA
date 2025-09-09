@@ -18,10 +18,12 @@ import { ProfilePhoto } from '@/components/ui/profile-photo';
 import type { Post } from '@/lib/data';
 import { useAuth } from '@/context/auth-context';
 import { isPostLikedByUser, toggleLike, isFollowing, toggleFollow } from '@/lib/db';
+import { CommentsSection } from './comments-section';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { useRouter } from 'next/navigation';
 import { addComment } from '@/lib/db';
 import { addReport } from '@/lib/db';
 
@@ -31,6 +33,7 @@ interface PostCardProps {
 
 export function PostCard({ post }: PostCardProps) {
   const { user } = useAuth();
+  const router = useRouter();
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes);
   const [isCommentOpen, setIsCommentOpen] = useState(false);
@@ -136,13 +139,23 @@ export function PostCard({ post }: PostCardProps) {
           </DropdownMenuContent>
         </DropdownMenu>
       </CardHeader>
-      <CardContent className="px-4 pb-2">
+      <CardContent 
+        className="px-4 pb-2 cursor-pointer hover:bg-muted/50 transition-colors rounded-md" 
+        onClick={() => router.push(`/posts/${post.id}`)}
+      >
         <p className="whitespace-pre-wrap">
           {post.content.split(/(#[\p{L}0-9_]+)/gu).map((part, i) => {
             if (part.startsWith('#')) {
               const tag = part.slice(1);
               return (
-                <a key={i} href={`/topics/${encodeURIComponent(tag)}`} className="text-primary hover:underline">{part}</a>
+                <a 
+                  key={i} 
+                  href={`/topics/${encodeURIComponent(tag)}`} 
+                  className="text-primary hover:underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {part}
+                </a>
               );
             }
             return <span key={i}>{part}</span>;
@@ -179,14 +192,22 @@ export function PostCard({ post }: PostCardProps) {
               <span>{post.commentsCount}</span>
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
             <DialogHeader>
-              <DialogTitle>Add a comment</DialogTitle>
+              <DialogTitle>Comments</DialogTitle>
             </DialogHeader>
-            <div className="space-y-3">
-              <Textarea value={commentText} onChange={(e) => setCommentText(e.target.value)} rows={4} placeholder="Write your comment..." />
-              <div className="flex justify-end">
-                <Button onClick={onSubmitComment}>Comment</Button>
+            <div className="flex flex-col flex-1 min-h-0">
+              {/* Existing Comments */}
+              <div className="flex-1 overflow-y-auto space-y-3 mb-4">
+                <CommentsSection postId={post.id!} />
+              </div>
+              
+              {/* Add Comment Form */}
+              <div className="border-t pt-3 space-y-3">
+                <Textarea value={commentText} onChange={(e) => setCommentText(e.target.value)} rows={3} placeholder="Write your comment..." />
+                <div className="flex justify-end">
+                  <Button onClick={onSubmitComment} disabled={!commentText.trim()}>Comment</Button>
+                </div>
               </div>
             </div>
           </DialogContent>

@@ -32,7 +32,7 @@ import { useToast } from '@/hooks/use-toast';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { Bell } from 'lucide-react';
-import { listNotifications, markAllNotificationsRead } from '@/lib/db';
+import { listNotifications, markAllNotificationsRead, subscribeNotifications, subscribeUnreadCount, markNotificationRead, deleteNotification, listNotificationsPaged } from '@/lib/db';
 import { useEffect, useState } from 'react';
 
 
@@ -56,6 +56,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { toast } = useToast();
   const [notifications, setNotifications] = useState<any[]>([]);
+  const [unread, setUnread] = useState(0);
+  const [notifCursor, setNotifCursor] = useState<any>(undefined);
+  const [loadingMoreNotifs, setLoadingMoreNotifs] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -76,13 +79,16 @@ export function AppShell({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    let unsub: (() => void) | undefined;
+    let unsubUnread: (() => void) | undefined;
     (async () => {
       if (!user) return;
       try {
-        const n = await listNotifications(user.uid, 10);
-        setNotifications(n);
+        unsub = subscribeNotifications(user.uid, (items) => setNotifications(items), 10);
+        unsubUnread = subscribeUnreadCount(user.uid, (count) => setUnread(count));
       } catch {}
     })();
+    return () => { if (unsub) unsub(); if (unsubUnread) unsubUnread(); };
   }, [user]);
 
   return (
@@ -141,8 +147,13 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="mr-2">
+              <Button variant="ghost" size="icon" className="mr-2 relative">
                 <Bell className="h-5 w-5" />
+                {unread > 0 && (
+                  <span className="absolute -top-1 -right-1 inline-flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] px-1.5 py-0.5">
+                    {unread > 99 ? '99+' : unread}
+                  </span>
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -152,7 +163,16 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <DropdownMenuItem disabled>No notifications</DropdownMenuItem>
               )}
               {notifications.map((n) => (
-                <DropdownMenuItem key={n.id}>{n.type} • {new Date(n.createdAt?.toDate?.() || Date.now()).toLocaleString()}</DropdownMenuItem>
+                <DropdownMenuItem key={n.id} className="flex items-center justify-between gap-2">
+                  <Link href={n.type === 'like' || n.type === 'comment' ? `/posts/${n.refId}` : n.type === 'follow' ? `/u/${n.actorId || ''}` : n.type === 'message' ? `/messages` : '#'} className="flex-1 truncate">
+                    <span className={`${n.read ? 'text-muted-foreground' : 'font-semibold'}`}>{n.type}</span>
+                    <span className="ml-2 text-xs text-muted-foreground">{new Date(n.createdAt?.toDate?.() || Date.now()).toLocaleString()}</span>
+                  </Link>
+                  {!n.read && (
+                    <Button size="sm" variant="ghost" onClick={async (e) => { e.preventDefault(); try { await markNotificationRead(n.id); } catch {} }}>Read</Button>
+                  )}
+                  <Button size="sm" variant="ghost" onClick={async (e) => { e.preventDefault(); try { await deleteNotification(n.id); } catch {} }}>Dismiss</Button>
+                </DropdownMenuItem>
               ))}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={async () => {
@@ -161,6 +181,17 @@ export function AppShell({ children }: { children: ReactNode }) {
                 const n = await listNotifications(user.uid, 10);
                 setNotifications(n);
               }}>Mark all read</DropdownMenuItem>
+              <DropdownMenuItem onClick={async () => {
+                if (!user || loadingMoreNotifs) return;
+                setLoadingMoreNotifs(true);
+                try {
+                  const { items, nextCursor } = await listNotificationsPaged(user.uid, 20, notifCursor);
+                  setNotifications(prev => [...prev, ...items]);
+                  setNotifCursor(nextCursor);
+                } finally {
+                  setLoadingMoreNotifs(false);
+                }
+              }}>{loadingMoreNotifs ? 'Loading...' : 'Load more'}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <DropdownMenu>

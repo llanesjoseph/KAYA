@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ProfilePhoto } from '@/components/ui/profile-photo';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { stories, suggestions } from '@/lib/data';
+import { stories } from '@/lib/data';
 import { AuthGuard } from '@/components/auth-guard';
 import { useEffect, useState } from 'react';
-import { fetchFeedForUser, fetchGlobalFeed, subscribeNewPosts } from '@/lib/db';
+import { fetchFeedForUser, fetchGlobalFeed, subscribeNewPosts, suggestUsersToFollow, suggestUsersSmart } from '@/lib/db';
 import type { PostDocument } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 
@@ -20,6 +20,7 @@ export default function HomePage() {
   const [cursor, setCursor] = useState<any>(undefined);
   const [loadingMore, setLoadingMore] = useState(false);
   const { user } = useAuth();
+  const [whoToFollow, setWhoToFollow] = useState<any[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -32,6 +33,15 @@ export default function HomePage() {
       } finally {
         setLoading(false);
       }
+    })();
+  }, [user]);
+  useEffect(() => {
+    (async () => {
+      if (!user) { setWhoToFollow([]); return; }
+      try {
+        const s = await suggestUsersSmart(user.uid, 5);
+        setWhoToFollow(s);
+      } catch {}
     })();
   }, [user]);
 
@@ -138,23 +148,18 @@ export default function HomePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {suggestions.map(user => (
-                  <div key={user.handle} className="flex items-center space-x-3">
-                    <ProfilePhoto
-                      imageUrl={user.avatarUrl}
-                      alt={user.name}
-                      size={40}
-                    />
+                {whoToFollow.map(u => (
+                  <div key={u.uid} className="flex items-center space-x-3">
+                    <ProfilePhoto imageUrl={u.photoURL || 'https://i.pravatar.cc/128'} alt={u.displayName || 'User'} size={40} />
                     <div>
-                      <p className="font-semibold">{user.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        @{user.handle}
-                      </p>
+                      <p className="font-semibold">{u.displayName || 'User'}</p>
+                      <p className="text-sm text-muted-foreground">{u.email || ''}</p>
                     </div>
                     <Button
                       variant="outline"
                       size="sm"
                       className="ml-auto border-primary text-primary hover:bg-primary/10"
+                      onClick={async () => { if (!user) return; try { await (await import('@/lib/db')).toggleFollow(user.uid, u.uid); const s = await suggestUsersToFollow(user.uid, 5); setWhoToFollow(s); } catch {} }}
                     >
                       Follow
                     </Button>

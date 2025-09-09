@@ -129,8 +129,6 @@ export default function SignupPage() {
     setGoogleLoading(true);
     try {
       const provider = new GoogleAuthProvider();
-      // We can prompt the user to re-provide their date of birth after this flow if needed
-      // For now, we will trust the age from Google, but a dedicated check is better
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
@@ -138,21 +136,31 @@ export default function SignupPage() {
       const userDoc = await getDoc(userDocRef);
 
       if (!userDoc.exists()) {
-         await setDoc(userDocRef, {
+        // For new Google users, redirect to age verification
+        await setDoc(userDocRef, {
           uid: user.uid,
           displayName: user.displayName,
           email: user.email,
           photoURL: user.photoURL || `https://i.pravatar.cc/150?u=${user.uid}`,
           bio: '',
           createdAt: new Date(),
+          needsAgeVerification: true, // Flag to indicate age verification needed
         });
-        // We are not collecting DOB for Google signups yet.
-        // This is a business logic decision to be made.
+        
+        router.push('/verify-age');
+        return;
+      }
+      
+      // Existing user - check if they need age verification
+      const userData = userDoc.data();
+      if (userData.needsAgeVerification) {
+        router.push('/verify-age');
+        return;
       }
       
       toast({
-        title: 'Account Created!',
-        description: 'Welcome to Kaya! Redirecting you to the homepage.',
+        title: 'Welcome back!',
+        description: 'Redirecting you to the homepage.',
       });
       router.push('/home');
 
