@@ -44,7 +44,6 @@ const getFirebaseConfig = () => {
 };
 
 let firebaseConfig = getFirebaseConfig();
-
 // Initialize Firebase only on client side or when all config is available
 let app: any = null;
 let db: any = null;
