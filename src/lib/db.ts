@@ -369,32 +369,30 @@ export async function markAllNotificationsRead(userId: string) {
 }
 
 export function subscribeNotifications(userId: string, onUpdate: (items: (NotificationDocument & { id: string })[]) => void, pageSize = 20) {
-  // Temporarily disabled until Firestore indexes are deployed to prevent console errors
-  // TODO: Re-enable after running: firebase deploy --only firestore:indexes
-  onUpdate([]);
-  return () => {}; // Return empty unsubscribe function
-  
-  /* 
-  const q = query(notificationsCol, where('userId', '==', userId), orderBy('createdAt', 'desc'), limit(pageSize));
-  return onSnapshot(q, (snap) => {
-    const items = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (NotificationDocument & { id: string })[];
-    onUpdate(items);
-  });
-  */
+  try {
+    const q = query(notificationsCol, where('userId', '==', userId), orderBy('createdAt', 'desc'), limit(pageSize));
+    return onSnapshot(q, (snap) => {
+      const items = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (NotificationDocument & { id: string })[];
+      onUpdate(items);
+    });
+  } catch (error) {
+    console.warn('Notifications subscription failed (indexes may not be deployed):', error);
+    onUpdate([]);
+    return () => {};
+  }
 }
 
 export function subscribeUnreadCount(userId: string, onUpdate: (count: number) => void, cap = 200) {
-  // Temporarily disabled until Firestore indexes are deployed to prevent console errors
-  // TODO: Re-enable after running: firebase deploy --only firestore:indexes
-  onUpdate(0);
-  return () => {}; // Return empty unsubscribe function
-  
-  /*
-  const q = query(notificationsCol, where('userId', '==', userId), where('read', '==', false), limit(cap));
-  return onSnapshot(q, (snap) => {
-    onUpdate(snap.size);
-  });
-  */
+  try {
+    const q = query(notificationsCol, where('userId', '==', userId), where('read', '==', false), limit(cap));
+    return onSnapshot(q, (snap) => {
+      onUpdate(snap.size);
+    });
+  } catch (error) {
+    console.warn('Unread count subscription failed (indexes may not be deployed):', error);
+    onUpdate(0);
+    return () => {};
+  }
 }
 
 export async function listNotificationsPaged(userId: string, pageSize = 20, cursor?: any) {

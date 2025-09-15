@@ -41,12 +41,12 @@ export async function createPostAction(
       };
     }
 
-    // Here you would typically save the post to a database.
-    // We'll revalidate the path to simulate data refresh.
-    revalidatePath('/');
+    // Post passed moderation - the actual database save happens in the client component
+    // This server action just handles validation and moderation
+    revalidatePath('/home');
     return {
       errors: {},
-      message: 'Post created successfully!',
+      message: 'Post approved and ready to publish!',
       success: true,
     };
   } catch (error) {
