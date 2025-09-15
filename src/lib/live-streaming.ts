@@ -49,9 +49,17 @@ export interface StreamViewer {
   joinedAt: any; // Firestore Timestamp
 }
 
-const streamsCol = collection(db, 'streams');
-const streamMessagesCol = collection(db, 'streamMessages');
-const streamViewersCol = collection(db, 'streamViewers');
+// Collections (initialized lazily to handle build-time scenarios)
+const getCollections = () => {
+  if (!db) {
+    throw new Error('Firebase not initialized');
+  }
+  return {
+    streamsCol: collection(db, 'streams'),
+    streamMessagesCol: collection(db, 'streamMessages'),
+    streamViewersCol: collection(db, 'streamViewers'),
+  };
+};
 
 // Stream management
 export async function createLiveStream(streamerData: {
@@ -120,6 +128,11 @@ export async function getLiveStreams(pageSize = 10) {
 }
 
 export async function getAllStreams(pageSize = 20) {
+  if (!db) {
+    console.warn('Firebase not initialized, returning empty streams list');
+    return [];
+  }
+  const { streamsCol } = getCollections();
   const q = query(streamsCol, orderBy('createdAt', 'desc'), limit(pageSize));
   const snap = await getDocs(q);
   return snap.docs.map(d => ({ id: d.id, ...d.data() })) as (LiveStream & { id: string })[];
