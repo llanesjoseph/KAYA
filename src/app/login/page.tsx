@@ -47,6 +47,12 @@ export default function LoginPage() {
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+
+    if (!auth) {
+      setError('Authentication service is not available. Please try again later.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -75,6 +81,13 @@ export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     setError(null);
     setGoogleLoading(true);
+
+    if (!auth || !db) {
+      setError('Authentication service is not available. Please try again later.');
+      setGoogleLoading(false);
+      return;
+    }
+
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
@@ -129,11 +142,16 @@ export default function LoginPage() {
       setError('Please enter your email address first.');
       return;
     }
-    
+
+    if (!auth) {
+      setError('Authentication service is not available. Please try again later.');
+      return;
+    }
+
     setError(null);
     setResetLoading(true);
     setShowResetSuccess(false);
-    
+
     try {
       await sendPasswordResetEmail(auth, email);
       setShowResetSuccess(true);
