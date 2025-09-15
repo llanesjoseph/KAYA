@@ -110,9 +110,17 @@ export interface UserStrainList {
   updatedAt: any;
 }
 
-const strainsCol = collection(db, 'strains');
-const reviewsCol = collection(db, 'strainReviews');
-const userListsCol = collection(db, 'userStrainLists');
+// Collections (initialized lazily to handle build-time scenarios)
+const getCollections = () => {
+  if (!db) {
+    throw new Error('Firebase not initialized');
+  }
+  return {
+    strainsCol: collection(db, 'strains'),
+    reviewsCol: collection(db, 'strainReviews'),
+    userListsCol: collection(db, 'userStrainLists'),
+  };
+};
 
 // Strain management
 export async function createStrain(strainData: Omit<StrainProfile, 'id' | 'createdAt' | 'updatedAt' | 'overallRating' | 'totalReviews' | 'ratingBreakdown'>, createdBy: string) {
@@ -151,6 +159,11 @@ export async function searchStrains(
   pageSize = 20,
   cursor?: any
 ) {
+  if (!db) {
+    console.warn('Firebase not initialized, returning empty search results');
+    return { strains: [], nextCursor: undefined };
+  }
+  const { strainsCol } = getCollections();
   let q = query(strainsCol);
   
   // Apply filters
@@ -218,12 +231,22 @@ export async function searchStrains(
 }
 
 export async function getPopularStrains(limit = 10) {
+  if (!db) {
+    console.warn('Firebase not initialized, returning empty popular strains list');
+    return [];
+  }
+  const { strainsCol } = getCollections();
   const q = query(strainsCol, orderBy('totalReviews', 'desc'), limit(limit));
   const snap = await getDocs(q);
   return snap.docs.map(d => ({ id: d.id, ...d.data() })) as (StrainProfile & { id: string })[];
 }
 
 export async function getTopRatedStrains(limit = 10) {
+  if (!db) {
+    console.warn('Firebase not initialized, returning empty top rated strains list');
+    return [];
+  }
+  const { strainsCol } = getCollections();
   const q = query(strainsCol, orderBy('overallRating', 'desc'), limit(limit));
   const snap = await getDocs(q);
   return snap.docs.map(d => ({ id: d.id, ...d.data() })) as (StrainProfile & { id: string })[];

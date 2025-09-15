@@ -19,11 +19,27 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const db = getFirestore(app);
-const auth = getAuth(app);
-const storage = getStorage(app);
-const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
+// Initialize Firebase only on client side or when all config is available
+let app: any = null;
+let db: any = null;
+let auth: any = null;
+let storage: any = null;
+let analytics: any = null;
+
+// Check if we have valid config and are not in build time
+const hasValidConfig = firebaseConfig.apiKey && firebaseConfig.projectId;
+const isBuildTime = process.env.NODE_ENV === 'production' && typeof window === 'undefined';
+
+if (hasValidConfig && !isBuildTime) {
+  try {
+    app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+    db = getFirestore(app);
+    auth = getAuth(app);
+    storage = getStorage(app);
+    analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
+  } catch (error) {
+    console.warn('Firebase initialization failed:', error);
+  }
+}
 
 export { app, db, auth, storage, analytics };
