@@ -1,12 +1,12 @@
 "use client";
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { differenceInYears } from 'date-fns';
 
-export default function AgeCheckPage() {
+function AgeCheckForm() {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get('next') || '/';
@@ -61,6 +61,14 @@ export default function AgeCheckPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function AgeCheckPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AgeCheckForm />
+    </Suspense>
   );
 }
 
