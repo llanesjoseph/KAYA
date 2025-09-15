@@ -85,13 +85,18 @@ export default function SignupPage() {
       return;
     }
 
+    if (!auth || !db) {
+      setError('Authentication service is not available. Please try again later.');
+      return;
+    }
+
     setLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
       await updateProfile(user, { displayName: name });
-      
+
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
         displayName: name,
@@ -127,6 +132,13 @@ export default function SignupPage() {
   const handleGoogleSignIn = async () => {
     setError(null);
     setGoogleLoading(true);
+
+    if (!auth || !db) {
+      setError('Authentication service is not available. Please try again later.');
+      setGoogleLoading(false);
+      return;
+    }
+
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
