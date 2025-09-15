@@ -20,11 +20,26 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!auth) {
+      console.warn('Firebase auth not initialized');
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       setLoading(false);
       if (user) {
-        try { await ensureUserProfile({ uid: user.uid, displayName: user.displayName, email: user.email, photoURL: user.photoURL }); } catch {}
+        try {
+          await ensureUserProfile({
+            uid: user.uid,
+            displayName: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL
+          });
+        } catch (error) {
+          console.warn('Failed to ensure user profile:', error);
+        }
       }
     });
 
