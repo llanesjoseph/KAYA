@@ -39,22 +39,29 @@ import type {
   TopicDocument,
 } from './types';
 
-// Collections
-const usersCol = collection(db, 'users');
-const postsCol = collection(db, 'posts');
-const commentsCol = collection(db, 'comments');
-const likesCol = collection(db, 'likes');
-const followsCol = collection(db, 'follows');
-const companyFollowsCol = collection(db, 'companyFollows');
-const threadsCol = collection(db, 'threads');
-const messagesCol = collection(db, 'messages');
-const notificationsCol = collection(db, 'notifications');
-const reportsCol = collection(db, 'reports');
-const articlesCol = collection(db, 'articles');
-const companiesCol = collection(db, 'companies');
-const eventsCol = collection(db, 'events');
-const jobsCol = collection(db, 'jobs');
-const topicsCol = collection(db, 'topics');
+// Collections (initialized lazily to handle build-time scenarios)
+const getCollections = () => {
+  if (!db) {
+    throw new Error('Firebase not initialized');
+  }
+  return {
+    usersCol: collection(db, 'users'),
+    postsCol: collection(db, 'posts'),
+    commentsCol: collection(db, 'comments'),
+    likesCol: collection(db, 'likes'),
+    followsCol: collection(db, 'follows'),
+    companyFollowsCol: collection(db, 'companyFollows'),
+    threadsCol: collection(db, 'threads'),
+    messagesCol: collection(db, 'messages'),
+    notificationsCol: collection(db, 'notifications'),
+    reportsCol: collection(db, 'reports'),
+    articlesCol: collection(db, 'articles'),
+    companiesCol: collection(db, 'companies'),
+    eventsCol: collection(db, 'events'),
+    jobsCol: collection(db, 'jobs'),
+    topicsCol: collection(db, 'topics'),
+  };
+};
 
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
   const ref = doc(usersCol, userId);
@@ -282,12 +289,22 @@ export async function toggleFollow(followerId: string, followingId: string) {
 
 // Company follow
 export async function isFollowingCompany(userId: string, companyId: string) {
+  if (!db) {
+    console.warn('Firebase not initialized, returning false for isFollowingCompany');
+    return false;
+  }
+  const { companyFollowsCol } = getCollections();
   const q = query(companyFollowsCol, where('userId', '==', userId), where('companyId', '==', companyId));
   const snap = await getDocs(q);
   return !snap.empty;
 }
 
 export async function toggleFollowCompany(userId: string, companyId: string) {
+  if (!db) {
+    console.warn('Firebase not initialized, returning false for toggleFollowCompany');
+    return false;
+  }
+  const { companyFollowsCol } = getCollections();
   const q = query(companyFollowsCol, where('userId', '==', userId), where('companyId', '==', companyId));
   const snap = await getDocs(q);
   if (snap.empty) {
@@ -583,6 +600,11 @@ export async function createCompany(ownerId: string, name: string, logoUrl?: str
 }
 
 export async function listCompanies(pageSize = 20) {
+  if (!db) {
+    console.warn('Firebase not initialized, returning empty companies list');
+    return [];
+  }
+  const { companiesCol } = getCollections();
   const q = query(companiesCol, orderBy('createdAt', 'desc'), limit(pageSize));
   const snap = await getDocs(q);
   return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as (CompanyDocument & { id: string })[];
