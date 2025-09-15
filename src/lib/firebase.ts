@@ -13,15 +13,35 @@ const getFirebaseConfig = () => {
   if (typeof window !== 'undefined' && (window as any).FIREBASE_WEBAPP_CONFIG) {
     try {
       const config = JSON.parse((window as any).FIREBASE_WEBAPP_CONFIG);
-      console.log('Using Firebase App Hosting config');
+      console.log('Using Firebase App Hosting config:', Object.keys(config));
       return config;
     } catch (e) {
       console.warn('Failed to parse FIREBASE_WEBAPP_CONFIG:', e);
     }
   }
 
+  // Check for Firebase App Hosting environment variables that might be injected differently
+  if (typeof window !== 'undefined') {
+    console.log('Checking for Firebase App Hosting environment...');
+    console.log('window.FIREBASE_WEBAPP_CONFIG exists:', !!(window as any).FIREBASE_WEBAPP_CONFIG);
+
+    // Try different possible Firebase App Hosting injection methods
+    const possibleConfigs = [
+      (window as any).__FIREBASE_DEFAULTS__,
+      (window as any).firebase_config,
+      (window as any).firebaseConfig
+    ];
+
+    for (let i = 0; i < possibleConfigs.length; i++) {
+      if (possibleConfigs[i]) {
+        console.log(`Found Firebase config via method ${i + 1}:`, Object.keys(possibleConfigs[i]));
+        return possibleConfigs[i];
+      }
+    }
+  }
+
   // Fallback to environment variables
-  const config = {
+  let config = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '',
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '',
@@ -31,13 +51,46 @@ const getFirebaseConfig = () => {
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || ''
   };
 
+  // Log environment variable status for debugging
+  if (typeof window !== 'undefined') {
+    console.log('Environment variables status:', {
+      NODE_ENV: process.env.NODE_ENV,
+      hostname: window.location.hostname,
+      hasApiKey: !!config.apiKey,
+      hasProjectId: !!config.projectId,
+      hasAuthDomain: !!config.authDomain,
+      hasAppId: !!config.appId
+    });
+  }
+
   if (typeof window !== 'undefined') {
     console.log('Using environment variables for Firebase config', {
       hasApiKey: !!config.apiKey,
       hasProjectId: !!config.projectId,
+      hasAuthDomain: !!config.authDomain,
+      hasAppId: !!config.appId,
       apiKeyLength: config.apiKey?.length,
-      projectId: config.projectId
+      projectId: config.projectId,
+      authDomain: config.authDomain,
+      appId: config.appId ? config.appId.substring(0, 10) + '...' : 'missing'
     });
+
+    // Log if any required fields are missing
+    const missingFields = [];
+    if (!config.apiKey) missingFields.push('apiKey');
+    if (!config.projectId) missingFields.push('projectId');
+    if (!config.authDomain) missingFields.push('authDomain');
+    if (!config.appId) missingFields.push('appId');
+
+    if (missingFields.length > 0) {
+      console.error('Missing Firebase config fields:', missingFields);
+      console.error('Available environment variables:', {
+        NEXT_PUBLIC_FIREBASE_API_KEY: !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+        NEXT_PUBLIC_FIREBASE_PROJECT_ID: !!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+        NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: !!process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+        NEXT_PUBLIC_FIREBASE_APP_ID: !!process.env.NEXT_PUBLIC_FIREBASE_APP_ID
+      });
+    }
   }
 
   return config;
@@ -103,17 +156,42 @@ if (typeof window === 'undefined') {
 } else {
   // On client-side, wait for Firebase App Hosting config to be available
   const hasValidConfig = firebaseConfig.apiKey && firebaseConfig.apiKey !== '' && firebaseConfig.projectId && firebaseConfig.projectId !== '';
-  if ((window as any).FIREBASE_WEBAPP_CONFIG || hasValidConfig) {
+
+  if (hasValidConfig) {
+    console.log('Firebase config available immediately, initializing...');
     initializeFirebase();
   } else {
-    // Retry initialization after a short delay to allow Firebase App Hosting to inject config
-    setTimeout(() => {
+    console.log('Firebase config not immediately available, trying alternative methods...');
+
+    // Check for Firebase App Hosting config injection
+    if ((window as any).FIREBASE_WEBAPP_CONFIG) {
+      console.log('Found FIREBASE_WEBAPP_CONFIG, reinitializing...');
       firebaseConfig = getFirebaseConfig();
-      const hasUpdatedConfig = firebaseConfig.apiKey && firebaseConfig.apiKey !== '' && firebaseConfig.projectId && firebaseConfig.projectId !== '';
-      if (hasUpdatedConfig) {
-        initializeFirebase();
-      }
-    }, 100);
+      initializeFirebase();
+    } else {
+      console.log('Waiting for Firebase App Hosting config injection...');
+
+      // Multiple retry attempts with different delays
+      const retryInitialization = (attempt: number) => {
+        console.log(`Firebase initialization attempt ${attempt}`);
+
+        firebaseConfig = getFirebaseConfig();
+        const hasUpdatedConfig = firebaseConfig.apiKey && firebaseConfig.apiKey !== '' && firebaseConfig.projectId && firebaseConfig.projectId !== '';
+
+        if (hasUpdatedConfig) {
+          console.log('Firebase config found on attempt', attempt);
+          initializeFirebase();
+        } else if (attempt < 5) {
+          // Try again with increasing delay
+          setTimeout(() => retryInitialization(attempt + 1), attempt * 200);
+        } else {
+          console.error('Firebase initialization failed after 5 attempts');
+        }
+      };
+
+      // Start with immediate retry
+      setTimeout(() => retryInitialization(1), 50);
+    }
   }
 }
 
