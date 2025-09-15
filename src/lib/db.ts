@@ -64,12 +64,22 @@ const getCollections = () => {
 };
 
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
+  if (!db) {
+    console.warn('Firebase not initialized, returning null user profile');
+    return null;
+  }
+  const { usersCol } = getCollections();
   const ref = doc(usersCol, userId);
   const snap = await getDoc(ref);
   return snap.exists() ? ({ uid: userId, ...(snap.data() as any) } as UserProfile) : null;
 }
 
 export async function ensureUserProfile(user: { uid: string; displayName: string | null; email: string | null; photoURL: string | null; }) {
+  if (!db) {
+    console.warn('Firebase not initialized, skipping user profile creation');
+    return;
+  }
+  const { usersCol } = getCollections();
   const ref = doc(usersCol, user.uid);
   const snap = await getDoc(ref);
   if (!snap.exists()) {
