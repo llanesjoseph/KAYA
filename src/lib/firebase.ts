@@ -4,8 +4,6 @@ import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
 // Firebase configuration - supports both local env vars and Firebase App Hosting auto-config
 const getFirebaseConfig = () => {
@@ -21,6 +19,7 @@ const getFirebaseConfig = () => {
   }
 
 
+
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '',
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '',
@@ -31,7 +30,6 @@ const getFirebaseConfig = () => {
   };
 
 
-  if (typeof window !== 'undefined') {
     console.log('Using environment variables for Firebase config', {
       hasApiKey: !!config.apiKey,
       hasProjectId: !!config.projectId,
@@ -42,6 +40,7 @@ const getFirebaseConfig = () => {
 };
 
 let firebaseConfig = getFirebaseConfig();
+
 // Initialize Firebase only on client side or when all config is available
 let app: any = null;
 let db: any = null;
