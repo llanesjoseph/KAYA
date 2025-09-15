@@ -10,7 +10,7 @@ import {
   sendPasswordResetEmail,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
+import { auth, db, ensureFirebaseInitialized } from '@/lib/firebase';
 import { KayaHubLogo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import {
@@ -48,7 +48,8 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
 
-    if (!auth) {
+    const isInitialized = await ensureFirebaseInitialized();
+    if (!isInitialized || !auth) {
       setError('Authentication service is not available. Please try again later.');
       return;
     }
@@ -82,7 +83,8 @@ export default function LoginPage() {
     setError(null);
     setGoogleLoading(true);
 
-    if (!auth || !db) {
+    const isInitialized = await ensureFirebaseInitialized();
+    if (!isInitialized || !auth || !db) {
       setError('Authentication service is not available. Please try again later.');
       setGoogleLoading(false);
       return;
@@ -143,7 +145,8 @@ export default function LoginPage() {
       return;
     }
 
-    if (!auth) {
+    const isInitialized = await ensureFirebaseInitialized();
+    if (!isInitialized || !auth) {
       setError('Authentication service is not available. Please try again later.');
       return;
     }
