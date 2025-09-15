@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { format, differenceInYears } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 
-import { auth, db } from '@/lib/firebase';
+import { auth, db, ensureFirebaseInitialized } from '@/lib/firebase';
 import {
   createUserWithEmailAndPassword,
   updateProfile,
@@ -85,7 +85,8 @@ export default function SignupPage() {
       return;
     }
 
-    if (!auth || !db) {
+    const isInitialized = await ensureFirebaseInitialized();
+    if (!isInitialized || !auth || !db) {
       setError('Authentication service is not available. Please try again later.');
       return;
     }
@@ -133,7 +134,8 @@ export default function SignupPage() {
     setError(null);
     setGoogleLoading(true);
 
-    if (!auth || !db) {
+    const isInitialized = await ensureFirebaseInitialized();
+    if (!isInitialized || !auth || !db) {
       setError('Authentication service is not available. Please try again later.');
       setGoogleLoading(false);
       return;
