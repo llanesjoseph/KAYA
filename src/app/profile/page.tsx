@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AuthGuard } from '@/components/auth-guard';
 import { useAuth } from '@/context/auth-context';
 import { useEffect, useState } from 'react';
-import { getUserProfile } from '@/lib/db';
+import { getUserProfile, getFollowCounts } from '@/lib/db';
 import type { PostDocument, UserProfile } from '@/lib/types';
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -19,12 +19,17 @@ export default function ProfilePage() {
   const { user } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [userPosts, setUserPosts] = useState<(PostDocument & { id: string })[]>([]);
+  const [followCounts, setFollowCounts] = useState<{ followers: number; following: number }>({ followers: 0, following: 0 });
 
   useEffect(() => {
     (async () => {
       if (!user) return;
-      const p = await getUserProfile(user.uid);
+      const [p, counts] = await Promise.all([
+        getUserProfile(user.uid),
+        getFollowCounts(user.uid)
+      ]);
       setProfile(p);
+      setFollowCounts(counts);
       const q = query(collection(db, 'posts'), where('authorId', '==', user.uid), orderBy('createdAt', 'desc'));
       const snap = await getDocs(q);
       setUserPosts(snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as any);
@@ -68,6 +73,23 @@ export default function ProfilePage() {
                 <p className="mt-4 text-muted-foreground">
                   {profile?.bio || 'No bio yet.'}
                 </p>
+                
+                {/* Follow Stats */}
+                <div className="mt-4 flex gap-6 text-sm">
+                  <div className="text-center">
+                    <div className="font-bold text-lg">{userPosts.length}</div>
+                    <div className="text-muted-foreground">Posts</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-bold text-lg">{followCounts.followers}</div>
+                    <div className="text-muted-foreground">Followers</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-bold text-lg">{followCounts.following}</div>
+                    <div className="text-muted-foreground">Following</div>
+                  </div>
+                </div>
+                
                 <div className="mt-4 flex flex-wrap gap-2 text-xs">
                   {profile?.roles?.map(r => (
                     <span key={r} className="px-2 py-1 rounded bg-muted">{r}</span>
