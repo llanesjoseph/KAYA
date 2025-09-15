@@ -13,15 +13,14 @@ const getFirebaseConfig = () => {
   if (typeof window !== 'undefined' && (window as any).FIREBASE_WEBAPP_CONFIG) {
     try {
       const config = JSON.parse((window as any).FIREBASE_WEBAPP_CONFIG);
-      console.log('Using Firebase App Hosting config');
+
       return config;
     } catch (e) {
       console.warn('Failed to parse FIREBASE_WEBAPP_CONFIG:', e);
     }
   }
 
-  // Fallback to environment variables
-  const config = {
+
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '',
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '',
@@ -31,13 +30,12 @@ const getFirebaseConfig = () => {
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || ''
   };
 
+
   if (typeof window !== 'undefined') {
     console.log('Using environment variables for Firebase config', {
       hasApiKey: !!config.apiKey,
       hasProjectId: !!config.projectId,
-      apiKeyLength: config.apiKey?.length,
-      projectId: config.projectId
-    });
+
   }
 
   return config;
@@ -103,17 +101,7 @@ if (typeof window === 'undefined') {
 } else {
   // On client-side, wait for Firebase App Hosting config to be available
   const hasValidConfig = firebaseConfig.apiKey && firebaseConfig.apiKey !== '' && firebaseConfig.projectId && firebaseConfig.projectId !== '';
-  if ((window as any).FIREBASE_WEBAPP_CONFIG || hasValidConfig) {
-    initializeFirebase();
-  } else {
-    // Retry initialization after a short delay to allow Firebase App Hosting to inject config
-    setTimeout(() => {
-      firebaseConfig = getFirebaseConfig();
-      const hasUpdatedConfig = firebaseConfig.apiKey && firebaseConfig.apiKey !== '' && firebaseConfig.projectId && firebaseConfig.projectId !== '';
-      if (hasUpdatedConfig) {
-        initializeFirebase();
-      }
-    }, 100);
+
   }
 }
 
