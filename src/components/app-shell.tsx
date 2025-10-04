@@ -34,6 +34,7 @@ import { signOut } from 'firebase/auth';
 import { Bell } from 'lucide-react';
 import { listNotifications, markAllNotificationsRead, subscribeNotifications, subscribeUnreadCount, markNotificationRead, deleteNotification, listNotificationsPaged } from '@/lib/db';
 import { useEffect, useState } from 'react';
+import { BugReporter } from '@/components/bug-reporter';
 
 
 const navItems = [
@@ -229,6 +230,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </main>
       </div>
+
+      {/* Floating Bug Reporter - visible on all pages */}
+      <BugReporter />
     </div>
   );
 }
