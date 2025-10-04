@@ -1,0 +1,386 @@
+{
+  "site_metadata": {
+    "site_name": "Your Cannabis Site Name",
+    "last_updated": "2025-01-01",
+    "content_categories": [
+      "news",
+      "legal",
+      "education",
+      "culture",
+      "medical",
+      "business",
+      "lifestyle",
+      "cultivation"
+    ]
+  },
+  "content_templates": {
+    "news_article": {
+      "id": "news_001",
+      "type": "news",
+      "title": "Breaking: New Cannabis Legislation Passes in State",
+      "slug": "new-cannabis-legislation-state",
+      "author": "Staff Writer",
+      "date_published": "2025-01-01",
+      "category": "legal",
+      "tags": ["legislation", "policy", "state-laws"],
+      "featured_image": "https://example.com/images/legislation.jpg",
+      "thumbnail": "https://example.com/images/legislation-thumb.jpg",
+      "excerpt": "Major developments in cannabis legislation as new bill passes...",
+      "content": "Full article content here with detailed information about the legislation...",
+      "read_time_minutes": 5,
+      "priority": "high",
+      "status": "published"
+    },
+    "legal_update": {
+      "id": "legal_001",
+      "type": "legal_update",
+      "title": "Q1 2025 Cannabis Law Changes: What You Need to Know",
+      "jurisdiction": "California",
+      "effective_date": "2025-01-01",
+      "summary": "Key changes to cannabis regulations including...",
+      "full_text": "Detailed legal information...",
+      "source_url": "https://example.gov/cannabis-regulations",
+      "impact_level": "major",
+      "affects": ["dispensaries", "cultivators", "consumers"]
+    },
+    "blog_post": {
+      "id": "blog_001",
+      "type": "blog",
+      "title": "The Complete Guide to Cannabis Terpenes",
+      "author": {
+        "name": "Jane Doe",
+        "bio": "Cannabis educator and researcher",
+        "avatar": "https://example.com/authors/jane.jpg"
+      },
+      "content_format": "long-form",
+      "sections": [
+        {
+          "heading": "What Are Terpenes?",
+          "content": "Terpenes are aromatic compounds found in many plants...",
+          "images": ["https://example.com/images/terpenes-chart.jpg"]
+        },
+        {
+          "heading": "Common Cannabis Terpenes",
+          "content": "The most prevalent terpenes in cannabis include...",
+          "subsections": [
+            {
+              "name": "Myrcene",
+              "description": "Known for its earthy, musky notes..."
+            },
+            {
+              "name": "Limonene",
+              "description": "Citrus-scented terpene with uplifting effects..."
+            }
+          ]
+        }
+      ],
+      "related_posts": ["blog_002", "blog_003"],
+      "comments_enabled": true
+    },
+    "short_blurb": {
+      "id": "blurb_001",
+      "type": "quick_fact",
+      "content": "Did you know? Cannabis has been used medicinally for over 3,000 years.",
+      "category": "history",
+      "shareable": true,
+      "social_media_ready": true
+    }
+  },
+  "content_library": [
+    {
+      "id": "news_002",
+      "type": "news",
+      "title": "Federal Banking Reform Could Transform Cannabis Industry",
+      "slug": "federal-banking-reform-cannabis",
+      "author": "Financial Reporter",
+      "date_published": "2024-12-28",
+      "category": "business",
+      "tags": ["banking", "federal", "finance", "SAFE-banking"],
+      "featured_image": "https://example.com/images/banking.jpg",
+      "excerpt": "New federal legislation could finally allow banks to work with cannabis businesses...",
+      "content": "The long-awaited banking reform bill has gained momentum in Congress...",
+      "read_time_minutes": 7,
+      "priority": "high",
+      "status": "published"
+    },
+    {
+      "id": "cultivation_001",
+      "type": "guide",
+      "title": "Indoor vs Outdoor Cannabis Cultivation: Pros and Cons",
+      "category": "cultivation",
+      "difficulty_level": "beginner",
+      "topics_covered": [
+        "Cost comparison",
+        "Quality factors",
+        "Environmental impact",
+        "Yield expectations"
+      ],
+      "images": [
+        {
+          "url": "https://example.com/images/indoor-grow.jpg",
+          "caption": "Modern indoor cultivation facility",
+          "credit": "Photographer Name"
+        },
+        {
+          "url": "https://example.com/images/outdoor-farm.jpg",
+          "caption": "Sustainable outdoor cannabis farm",
+          "credit": "Photographer Name"
+        }
+      ],
+      "key_takeaways": [
+        "Indoor offers more control but higher costs",
+        "Outdoor is more sustainable but weather-dependent",
+        "Both methods can produce high-quality cannabis"
+      ]
+    },
+    {
+      "id": "medical_001",
+      "type": "medical",
+      "title": "Cannabis for Chronic Pain Management: Recent Studies",
+      "category": "medical",
+      "research_citations": [
+        {
+          "study": "Journal of Pain Medicine 2024",
+          "findings": "70% of patients reported significant pain reduction"
+        }
+      ],
+      "medical_conditions": ["chronic pain", "arthritis", "fibromyalgia"],
+      "disclaimer": "This content is for educational purposes only. Consult with a healthcare provider.",
+      "expert_quotes": [
+        {
+          "expert": "Dr. Smith, MD",
+          "quote": "Cannabis shows promising results for patients who haven't responded to traditional treatments.",
+          "credentials": "Pain Management Specialist"
+        }
+      ]
+    },
+    {
+      "id": "culture_001",
+      "type": "story",
+      "title": "From Prohibition to Progress: A Cannabis Entrepreneur's Journey",
+      "category": "culture",
+      "story_type": "personal_narrative",
+      "featured_person": {
+        "name": "Alex Johnson",
+        "role": "Dispensary Owner",
+        "location": "Denver, CO"
+      },
+      "content": "Alex's journey from advocate to business owner reflects the changing landscape...",
+      "pull_quotes": [
+        "We're not just selling a product, we're changing perceptions",
+        "Education is the key to normalization"
+      ],
+      "gallery": [
+        "https://example.com/images/storefront.jpg",
+        "https://example.com/images/team-photo.jpg"
+      ]
+    },
+    {
+      "id": "lifestyle_001",
+      "type": "lifestyle",
+      "title": "Cannabis and Yoga: Finding Balance",
+      "category": "lifestyle",
+      "content_type": "feature",
+      "topics": ["wellness", "mindfulness", "exercise"],
+      "tips": [
+        "Start with low doses",
+        "Choose the right strain for your practice",
+        "Stay hydrated"
+      ],
+      "related_products": [
+        {
+          "type": "strain",
+          "name": "Zen Garden",
+          "effects": ["relaxing", "focusing"]
+        }
+      ]
+    },
+    {
+      "id": "quick_001",
+      "type": "quick_fact",
+      "content": "Hemp and marijuana are both cannabis plants, but hemp contains less than 0.3% THC.",
+      "category": "education",
+      "icon": "info-circle",
+      "color_theme": "green"
+    },
+    {
+      "id": "legal_002",
+      "type": "legal_update",
+      "title": "Municipal Zoning Changes for Cannabis Retailers",
+      "jurisdiction": "Los Angeles County",
+      "effective_date": "2025-02-01",
+      "summary": "New zoning restrictions require 600ft buffer from schools...",
+      "impact_level": "moderate",
+      "action_required": true,
+      "deadline": "2025-03-01"
+    },
+    {
+      "id": "product_spotlight_001",
+      "type": "product_spotlight",
+      "title": "Innovation in Cannabis Beverages",
+      "category": "products",
+      "featured_products": [
+        {
+          "name": "Chill Seltzer",
+          "type": "beverage",
+          "thc_content": "5mg",
+          "cbd_content": "5mg",
+          "flavors": ["lemon", "berry", "mango"]
+        }
+      ],
+      "market_trends": "Cannabis beverages grew 40% year-over-year",
+      "images": ["https://example.com/images/beverages.jpg"]
+    },
+    {
+      "id": "event_001",
+      "type": "event",
+      "title": "Cannabis Industry Expo 2025",
+      "date": "2025-03-15",
+      "location": "Las Vegas Convention Center",
+      "description": "Annual gathering of industry professionals...",
+      "registration_url": "https://example.com/register",
+      "featured_speakers": ["Industry Leader 1", "Industry Leader 2"]
+    }
+  ],
+  "photo_galleries": [
+    {
+      "id": "gallery_001",
+      "title": "Cannabis Through the Microscope",
+      "description": "Stunning macro photography of cannabis trichomes",
+      "photos": [
+        {
+          "url": "https://example.com/gallery/trichomes-1.jpg",
+          "title": "Mature Trichomes",
+          "description": "Cloudy trichomes indicating peak harvest",
+          "photographer": "Photo Credit Name",
+          "license": "CC BY 4.0"
+        },
+        {
+          "url": "https://example.com/gallery/trichomes-2.jpg",
+          "title": "Amber Trichomes",
+          "description": "Late-stage trichome development",
+          "photographer": "Photo Credit Name",
+          "license": "CC BY 4.0"
+        }
+      ],
+      "category": "education"
+    },
+    {
+      "id": "gallery_002",
+      "title": "Historic Cannabis Imagery",
+      "description": "Vintage photos and advertisements from cannabis history",
+      "photos": [
+        {
+          "url": "https://example.com/gallery/vintage-1.jpg",
+          "title": "1930s Medical Cannabis",
+          "year": "1936",
+          "source": "Historical Archive"
+        }
+      ]
+    }
+  ],
+  "content_schedule": {
+    "daily_posts": [
+      {
+        "time": "09:00",
+        "type": "quick_fact",
+        "category_rotation": ["education", "history", "science"]
+      },
+      {
+        "time": "14:00",
+        "type": "news",
+        "priority": "latest"
+      },
+      {
+        "time": "18:00",
+        "type": "feature",
+        "category_rotation": ["lifestyle", "culture", "medical"]
+      }
+    ],
+    "weekly_features": {
+      "monday": "Legal Update Roundup",
+      "wednesday": "Cultivation Tips",
+      "friday": "Product Spotlight"
+    }
+  },
+  "seo_metadata": {
+    "default_keywords": [
+      "cannabis",
+      "marijuana",
+      "hemp",
+      "CBD",
+      "THC",
+      "cannabis news",
+      "cannabis culture",
+      "medical marijuana"
+    ],
+    "schema_markup": {
+      "type": "NewsArticle",
+      "publisher": "Your Site Name",
+      "enable_rich_snippets": true
+    }
+  },
+  "social_media_templates": {
+    "twitter": {
+      "max_length": 280,
+      "hashtag_sets": [
+        ["#Cannabis", "#CannabisNews", "#Marijuana"],
+        ["#CannabisEducation", "#LearnCannabis", "#CannabisScience"],
+        ["#MedicalCannabis", "#CannabisHealth", "#CBD"]
+      ]
+    },
+    "instagram": {
+      "post_types": ["carousel", "single", "story"],
+      "hashtag_limit": 30,
+      "suggested_hashtags": [
+        "#cannabiscommunity",
+        "#cannabisculture",
+        "#weedstagram",
+        "#cannabiseducation"
+      ]
+    }
+  },
+  "content_ideas_bank": [
+    {
+      "title": "The Entourage Effect Explained",
+      "type": "educational",
+      "estimated_length": "1500 words",
+      "research_needed": true
+    },
+    {
+      "title": "5 Cannabis Strains for Creative Activities",
+      "type": "listicle",
+      "estimated_length": "800 words",
+      "visual_elements": ["strain photos", "effects infographic"]
+    },
+    {
+      "title": "Interview with a Master Grower",
+      "type": "interview",
+      "format": "Q&A",
+      "topics": ["cultivation techniques", "industry changes", "future predictions"]
+    },
+    {
+      "title": "Cannabis Tourism: Top Destinations",
+      "type": "travel",
+      "regions": ["Colorado", "California", "Amsterdam", "Canada"],
+      "include_maps": true
+    },
+    {
+      "title": "Understanding Cannabis Lab Testing",
+      "type": "technical",
+      "topics": ["potency", "pesticides", "heavy metals", "microbials"],
+      "include_charts": true
+    }
+  ],
+  "user_generated_content": {
+    "reviews": {
+      "enabled": true,
+      "moderation_required": true,
+      "rating_system": "5-star"
+    },
+    "submissions": {
+      "types": ["stories", "photos", "questions"],
+      "guidelines_url": "https://example.com/submission-guidelines"
+    }
+  }
+}

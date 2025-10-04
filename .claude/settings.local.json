@@ -12,7 +12,13 @@
       "Bash(npm install:*)",
       "Bash(git commit:*)",
       "Bash(git fetch:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Read(//c/Users/bigpe/Downloads/**)",
+      "Bash(npm run seed:*)",
+      "Bash(if [ ! -d \"data\" ])",
+      "Bash(then mkdir data)",
+      "Bash(fi)",
+      "Bash(npx tsx:*)"
     ],
     "deny": [],
     "ask": []
