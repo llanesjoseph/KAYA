@@ -1,11 +1,18 @@
 import { Resend } from 'resend';
 
-// Initialize Resend with API key
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 // Email domains
 const NOTIFICATION_DOMAIN = 'kayamail.crucibleanalytics.dev';
 const BUG_DOMAIN = 'bugs.crucibleanalytics.dev';
+
+// Lazy-load Resend to avoid build-time errors
+let resendInstance: Resend | null = null;
+
+function getResend(): Resend {
+  if (!resendInstance) {
+    resendInstance = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendInstance;
+}
 
 interface EmailOptions {
   to: string | string[];
@@ -19,6 +26,7 @@ interface EmailOptions {
  */
 export async function sendNotificationEmail(options: EmailOptions) {
   try {
+    const resend = getResend();
     const data = await resend.emails.send({
       from: `KAYA <notifications@${NOTIFICATION_DOMAIN}>`,
       to: options.to,
