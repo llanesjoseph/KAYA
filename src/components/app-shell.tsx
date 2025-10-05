@@ -13,7 +13,8 @@ import {
   Settings,
   User,
   LogOut,
-  ChevronDown
+  ChevronDown,
+  UserPlus
 } from 'lucide-react';
 import { KayaHubLogo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
@@ -44,6 +45,7 @@ const navItems = [
   { href: '/messages', icon: MessageCircle, label: 'Messages' },
   { href: '/live', icon: Clapperboard, label: 'Live' },
   { href: '/jobs', icon: Briefcase, label: 'Jobs' },
+  { href: '/invite', icon: UserPlus, label: 'Invite Friends' },
 ];
 
 const bottomNavItems = [
