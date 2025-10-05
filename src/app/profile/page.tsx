@@ -115,18 +115,7 @@ export default function ProfilePage() {
             <TabsContent value="posts">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                 {userPosts.map(p => (
-                  <PostCard
-                    key={p.id}
-                    post={{
-                      id: p.id,
-                      author: { name: p.authorName || 'User', avatarUrl: p.authorPhotoURL || '' },
-                      content: p.content,
-                      imageUrl: p.imageUrl,
-                      likes: p.likeCount,
-                      commentsCount: p.commentCount,
-                      timestamp: new Date().toISOString(),
-                    }}
-                  />
+                  <PostCard key={p.id} post={p} />
                 ))}
               </div>
             </TabsContent>

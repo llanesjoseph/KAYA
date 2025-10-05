@@ -15,24 +15,25 @@ export const CommentsSection = dynamic(() => import('@/components/social/comment
 });
 
 // Bug reporter - only needed for interactions, client-side only
-export const BugReporter = dynamic(() => import('@/components/bug-reporter'), {
+export const BugReporter = dynamic(() => import('@/components/bug-reporter').then(mod => ({ default: mod.BugReporter })), {
   ssr: false,
   loading: () => null,
 });
 
 // Charts - recharts is heavy (146KB), only load when needed
-export const ChartContainer = dynamic(() => import('@/components/ui/chart').then(mod => ({ default: mod.ChartContainer })), {
-  ssr: false,
-  loading: () => <div className="h-64 animate-pulse bg-gray-200 rounded-lg" />,
-});
-
-export const ChartTooltip = dynamic(() => import('@/components/ui/chart').then(mod => ({ default: mod.ChartTooltip })), {
-  ssr: false,
-});
-
-export const ChartTooltipContent = dynamic(() => import('@/components/ui/chart').then(mod => ({ default: mod.ChartTooltipContent })), {
-  ssr: false,
-});
+// Note: Chart components have complex type signatures - import directly when needed
+// export const ChartContainer = dynamic(() => import('@/components/ui/chart').then(mod => ({ default: mod.ChartContainer })), {
+//   ssr: false,
+//   loading: () => <div className="h-64 animate-pulse bg-gray-200 rounded-lg" />,
+// });
+//
+// export const ChartTooltip = dynamic(() => import('@/components/ui/chart').then(mod => ({ default: mod.ChartTooltip })), {
+//   ssr: false,
+// });
+//
+// export const ChartTooltipContent = dynamic(() => import('@/components/ui/chart').then(mod => ({ default: mod.ChartTooltipContent })), {
+//   ssr: false,
+// });
 
 // Heavy UI components that are only needed on certain pages
 export const Carousel = dynamic(() => import('@/components/ui/carousel').then(mod => ({

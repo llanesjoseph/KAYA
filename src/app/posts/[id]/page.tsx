@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { AppShell } from '@/components/app-shell';
@@ -12,10 +12,11 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 interface PostPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-export default function PostPage({ params }: PostPageProps) {
+export default function PostPage(props: PostPageProps) {
+  const params = use(props.params);
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [post, setPost] = useState<(PostDocument & { id: string }) | null>(null);
@@ -121,13 +122,7 @@ export default function PostPage({ params }: PostPageProps) {
         </div>
 
         <div className="space-y-4">
-          <PostCard
-            post={post}
-            currentUserId={user?.uid}
-            onPostUpdate={(updatedPost) => {
-              setPost(prevPost => prevPost ? { ...prevPost, ...updatedPost } : null);
-            }}
-          />
+          <PostCard post={post} />
         </div>
       </div>
     </AppShell>

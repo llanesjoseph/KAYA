@@ -58,7 +58,7 @@ export default function PublicUserPage() {
         </div>
         <div className="space-y-4">
           {posts.map(p => (
-            <PostCard key={p.id} post={{ id: p.id, authorId: p.authorId, author: { name: p.authorName || 'User', avatarUrl: p.authorPhotoURL || '' }, content: p.content, imageUrl: p.imageUrl, likes: p.likeCount, commentsCount: p.commentCount, timestamp: new Date().toISOString() }} />
+            <PostCard key={p.id} post={p} />
           ))}
         </div>
       </AppShell>

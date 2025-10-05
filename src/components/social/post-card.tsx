@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ProfilePhoto } from '@/components/ui/profile-photo';
-import type { Post } from '@/lib/data';
+import type { PostDocument } from '@/lib/types';
 import { useAuth } from '@/context/auth-context';
 import { isPostLikedByUser, toggleLike, isFollowing, toggleFollow } from '@/lib/db';
 import { CommentsSection } from './comments-section';
@@ -28,14 +28,14 @@ import { addComment } from '@/lib/db';
 import { addReport } from '@/lib/db';
 
 interface PostCardProps {
-  post: Post & { authorId?: string };
+  post: PostDocument & { id: string };
 }
 
 export function PostCard({ post }: PostCardProps) {
   const { user } = useAuth();
   const router = useRouter();
   const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(post.likes);
+  const [likeCount, setLikeCount] = useState(post.likeCount);
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [following, setFollowing] = useState(false);
@@ -110,14 +110,14 @@ export function PostCard({ post }: PostCardProps) {
     <Card>
       <CardHeader className="flex flex-row items-center gap-4 p-4">
         <ProfilePhoto
-          imageUrl={post.author.avatarUrl}
-          alt={post.author.name}
+          imageUrl={post.authorPhotoURL || ''}
+          alt={post.authorName || 'User'}
           size={40}
         />
         <div className="flex-1">
-          <p className="font-semibold">{post.author.name}</p>
+          <p className="font-semibold">{post.authorName || 'User'}</p>
           <p className="text-sm text-muted-foreground">
-            {formatDistanceToNow(new Date(post.timestamp), {
+            {post.createdAt && formatDistanceToNow(post.createdAt.toDate(), {
               addSuffix: true,
             })}
           </p>
@@ -189,7 +189,7 @@ export function PostCard({ post }: PostCardProps) {
           <DialogTrigger asChild>
             <Button variant="ghost" className="flex items-center gap-2">
               <MessageSquare className="h-5 w-5" />
-              <span>{post.commentsCount}</span>
+              <span>{post.commentCount}</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">

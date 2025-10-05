@@ -107,8 +107,8 @@ Container.displayName = "Container"
 
 // Kaya Hub Navigation Component
 const Nav = React.forwardRef<
-  HTMLNavElement,
-  React.HTMLAttributes<HTMLNavElement>
+  HTMLElement,
+  React.HTMLAttributes<HTMLElement>
 >(({ className, ...props }, ref) => (
   <nav
     ref={ref}

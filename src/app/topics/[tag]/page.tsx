@@ -33,7 +33,7 @@ export default function TopicPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="space-y-4">
             {posts.map(p => (
-              <PostCard key={p.id} post={{ id: p.id, authorId: p.authorId, author: { name: p.authorName || 'User', avatarUrl: p.authorPhotoURL || '' }, content: p.content, imageUrl: p.imageUrl, likes: p.likeCount, commentsCount: p.commentCount, timestamp: new Date().toISOString() }} />
+              <PostCard key={p.id} post={p} />
             ))}
             {postCursor && (
               <div className="flex justify-center">

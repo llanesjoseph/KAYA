@@ -109,16 +109,7 @@ export default function HomePage() {
                   {feed.map(post => (
                     <PostCard
                       key={post.id}
-                      post={{
-                        id: post.id,
-                        author: { name: post.authorName || 'User', avatarUrl: post.authorPhotoURL || 'https://i.pravatar.cc/128' },
-                        authorId: post.authorId,
-                        content: post.content,
-                        imageUrl: post.imageUrl,
-                        likes: post.likeCount,
-                        commentsCount: post.commentCount,
-                        timestamp: new Date().toISOString(),
-                      }}
+                      post={post}
                     />
                   ))}
                   {cursor && (

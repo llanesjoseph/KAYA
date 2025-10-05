@@ -95,7 +95,11 @@ export default function LivePage() {
     if (!newMessage.trim() || !selectedStream || !user) return;
 
     try {
-      await sendStreamMessage(selectedStream.id, user, newMessage);
+      await sendStreamMessage(selectedStream.id, {
+        uid: user.uid,
+        displayName: user.displayName || 'Anonymous',
+        photoURL: user.photoURL || undefined
+      }, newMessage);
       setNewMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
@@ -171,9 +175,9 @@ export default function LivePage() {
                         onClick={() => setSelectedStream(stream)}>
                     <CardHeader className="pb-2">
                       <div className="flex items-center gap-3">
-                        <ProfilePhoto 
-                          imageUrl={stream.streamerPhotoURL} 
-                          size={40} 
+                        <ProfilePhoto
+                          imageUrl={stream.streamerPhotoURL || ''}
+                          size={40}
                         />
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold truncate">{stream.title}</h3>
@@ -221,9 +225,9 @@ export default function LivePage() {
                           onClick={() => setSelectedStream(stream)}>
                       <CardHeader className="pb-2">
                         <div className="flex items-center gap-3">
-                          <ProfilePhoto 
-                            imageUrl={stream.streamerPhotoURL} 
-                            size={40} 
+                          <ProfilePhoto
+                            imageUrl={stream.streamerPhotoURL || ''}
+                            size={40}
                           />
                           <div className="flex-1 min-w-0">
                             <h3 className="font-semibold truncate">{stream.title}</h3>
@@ -354,7 +358,7 @@ export default function LivePage() {
                 {/* Stream Header */}
                 <div className="flex items-center justify-between p-4 border-b">
                   <div className="flex items-center gap-3">
-                    <ProfilePhoto imageUrl={selectedStream.streamerPhotoURL} size={40} />
+                    <ProfilePhoto imageUrl={selectedStream.streamerPhotoURL || ''} size={40} />
                     <div>
                       <h2 className="font-semibold">{selectedStream.title}</h2>
                       <p className="text-sm text-muted-foreground">{selectedStream.streamerName}</p>
@@ -400,7 +404,7 @@ export default function LivePage() {
                     <div className="flex-1 overflow-y-auto p-3 space-y-3">
                       {streamMessages.map((message) => (
                         <div key={message.id} className="flex items-start gap-2">
-                          <ProfilePhoto imageUrl={message.userPhotoURL} size={24} />
+                          <ProfilePhoto imageUrl={message.userPhotoURL || ''} size={24} />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                               <span className="text-sm font-medium">{message.userName}</span>

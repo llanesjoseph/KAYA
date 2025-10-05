@@ -165,7 +165,7 @@ export default function VerifyAgePage() {
                 <Checkbox
                   id="age-attestation"
                   checked={ageAttestation}
-                  onCheckedChange={setAgeAttestation}
+                  onCheckedChange={(checked) => setAgeAttestation(checked === true)}
                 />
                 <Label htmlFor="age-attestation" className="text-sm">
                   I confirm that I am 21 years of age or older *

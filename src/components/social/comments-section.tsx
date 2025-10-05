@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useAuthContext } from '@/context/auth-context';
+import { useAuth } from '@/context/auth-context';
 import { listComments } from '@/lib/db';
 import type { CommentDocument } from '@/lib/types';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
