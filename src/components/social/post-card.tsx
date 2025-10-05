@@ -181,13 +181,13 @@ export function PostCard({ post }: PostCardProps) {
         )}
       </CardContent>
       <CardFooter className="flex justify-between p-2">
-        <Button variant="ghost" className={`flex items-center gap-2 ${liked ? 'text-red-500' : ''}`} onClick={onToggleLike}>
+        <Button variant="ghost" className={`flex items-center gap-2 ${liked ? 'text-red-500' : ''}`} onClick={onToggleLike} aria-label="Like post">
           <Heart className="h-5 w-5" />
           <span>{likeCount}</span>
         </Button>
         <Dialog open={isCommentOpen} onOpenChange={setIsCommentOpen}>
           <DialogTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-2">
+            <Button variant="ghost" className="flex items-center gap-2" aria-label="Comment on post">
               <MessageSquare className="h-5 w-5" />
               <span>{post.commentCount}</span>
             </Button>

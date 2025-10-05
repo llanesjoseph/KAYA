@@ -124,6 +124,8 @@ const getCollections = () => {
 
 // Strain management
 export async function createStrain(strainData: Omit<StrainProfile, 'id' | 'createdAt' | 'updatedAt' | 'overallRating' | 'totalReviews' | 'ratingBreakdown'>, createdBy: string) {
+  const { strainsCol } = getCollections();
+
   const strain: Omit<StrainProfile, 'id'> = {
     ...strainData,
     overallRating: 0,
@@ -141,9 +143,10 @@ export async function createStrain(strainData: Omit<StrainProfile, 'id' | 'creat
 }
 
 export async function getStrain(strainId: string): Promise<StrainProfile | null> {
-  const doc = await getDoc(doc(strainsCol, strainId));
-  if (!doc.exists()) return null;
-  return { id: doc.id, ...doc.data() } as StrainProfile;
+  const { strainsCol } = getCollections();
+  const docSnap = await getDoc(doc(strainsCol, strainId));
+  if (!docSnap.exists()) return null;
+  return { id: docSnap.id, ...docSnap.data() } as StrainProfile;
 }
 
 export async function searchStrains(
@@ -257,6 +260,8 @@ export async function addStrainReview(
   strainId: string,
   reviewData: Omit<StrainReview, 'id' | 'strainId' | 'createdAt' | 'helpfulCount' | 'verified'>,
 ) {
+  const { reviewsCol } = getCollections();
+
   const review: Omit<StrainReview, 'id'> = {
     ...reviewData,
     strainId,
@@ -264,35 +269,37 @@ export async function addStrainReview(
     helpfulCount: 0,
     verified: false,
   };
-  
+
   const ref = await addDoc(reviewsCol, review as any);
-  
+
   // Update strain rating
   await updateStrainRating(strainId);
-  
+
   return ref.id;
 }
 
 async function updateStrainRating(strainId: string) {
+  const { reviewsCol, strainsCol } = getCollections();
+
   // Get all reviews for this strain
   const reviewsQuery = query(reviewsCol, where('strainId', '==', strainId));
   const reviewsSnap = await getDocs(reviewsQuery);
-  
+
   if (reviewsSnap.empty) return;
-  
+
   const reviews = reviewsSnap.docs.map(d => d.data() as StrainReview);
-  
+
   // Calculate new ratings
   const totalReviews = reviews.length;
   const ratingSum = reviews.reduce((sum, review) => sum + review.rating, 0);
   const overallRating = ratingSum / totalReviews;
-  
+
   // Calculate rating breakdown
   const ratingBreakdown = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
   reviews.forEach(review => {
     ratingBreakdown[review.rating as keyof typeof ratingBreakdown]++;
   });
-  
+
   // Update strain document
   await updateDoc(doc(strainsCol, strainId), {
     overallRating,
@@ -303,25 +310,29 @@ async function updateStrainRating(strainId: string) {
 }
 
 export async function getStrainReviews(strainId: string, pageSize = 20, cursor?: any) {
+  const { reviewsCol } = getCollections();
+
   let q = query(
     reviewsCol,
     where('strainId', '==', strainId),
     orderBy('createdAt', 'desc'),
     limit(pageSize)
   );
-  
+
   if (cursor) {
     q = query(q, startAfter(cursor));
   }
-  
+
   const snap = await getDocs(q);
   const reviews = snap.docs.map(d => ({ id: d.id, ...d.data() })) as (StrainReview & { id: string })[];
   const nextCursor = snap.docs.length ? snap.docs[snap.docs.length - 1] : undefined;
-  
+
   return { reviews, nextCursor };
 }
 
 export async function markReviewHelpful(reviewId: string) {
+  const { reviewsCol } = getCollections();
+
   await updateDoc(doc(reviewsCol, reviewId), {
     helpfulCount: arrayUnion(1), // Note: This is simplified. In production, track user IDs to prevent duplicate votes
   });
@@ -334,6 +345,8 @@ export async function createUserStrainList(
   description?: string,
   isPublic = false
 ) {
+  const { userListsCol } = getCollections();
+
   const list: Omit<UserStrainList, 'id'> = {
     userId,
     name,
@@ -343,12 +356,14 @@ export async function createUserStrainList(
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   };
-  
+
   const ref = await addDoc(userListsCol, list as any);
   return ref.id;
 }
 
 export async function addStrainToList(listId: string, strainId: string) {
+  const { userListsCol } = getCollections();
+
   await updateDoc(doc(userListsCol, listId), {
     strainIds: arrayUnion(strainId),
     updatedAt: serverTimestamp(),
@@ -356,6 +371,8 @@ export async function addStrainToList(listId: string, strainId: string) {
 }
 
 export async function removeStrainFromList(listId: string, strainId: string) {
+  const { userListsCol } = getCollections();
+
   await updateDoc(doc(userListsCol, listId), {
     strainIds: arrayRemove(strainId),
     updatedAt: serverTimestamp(),
@@ -363,6 +380,8 @@ export async function removeStrainFromList(listId: string, strainId: string) {
 }
 
 export async function getUserStrainLists(userId: string) {
+  const { userListsCol } = getCollections();
+
   const q = query(userListsCol, where('userId', '==', userId), orderBy('createdAt', 'desc'));
   const snap = await getDocs(q);
   return snap.docs.map(d => ({ id: d.id, ...d.data() })) as (UserStrainList & { id: string })[];

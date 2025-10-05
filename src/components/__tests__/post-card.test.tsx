@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { PostCard } from '../social/post-card';
 import { renderWithProviders, createMockUser } from '@/lib/__tests__/test-utils';
 import { isPostLikedByUser, toggleLike, isFollowing, toggleFollow, addComment } from '@/lib/db';
-import { Post } from '@/lib/data';
+import { PostDocument } from '@/lib/types';
 
 // Mock the database functions
 jest.mock('@/lib/db', () => ({
@@ -25,24 +25,40 @@ jest.mock('next/image', () => ({
   },
 }));
 
+// Mock CommentsSection component
+jest.mock('../social/comments-section', () => ({
+  CommentsSection: ({ postId }: { postId: string }) => (
+    <div data-testid="comments-section">Comments for {postId}</div>
+  ),
+}));
+
 const mockIsPostLikedByUser = isPostLikedByUser as jest.MockedFunction<typeof isPostLikedByUser>;
 const mockToggleLike = toggleLike as jest.MockedFunction<typeof toggleLike>;
 const mockIsFollowing = isFollowing as jest.MockedFunction<typeof isFollowing>;
 const mockToggleFollow = toggleFollow as jest.MockedFunction<typeof toggleFollow>;
 const mockAddComment = addComment as jest.MockedFunction<typeof addComment>;
 
+// Helper to create mock Firestore Timestamp
+const createMockTimestamp = (date: Date = new Date()) => ({
+  toDate: () => date,
+  seconds: Math.floor(date.getTime() / 1000),
+  nanoseconds: 0,
+});
+
 describe('PostCard Component', () => {
-  const mockPost: Post & { authorId?: string } = {
+  // Use a recent date (5 days ago) to match test expectations
+  const fiveDaysAgo = new Date();
+  fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
+
+  const mockPost: PostDocument & { id: string } = {
     id: 'post123',
-    author: {
-      name: 'John Doe',
-      avatarUrl: 'https://example.com/avatar.jpg',
-    },
     authorId: 'author123',
+    authorName: 'John Doe',
+    authorPhotoURL: 'https://example.com/avatar.jpg',
     content: 'This is a test post #testing',
-    timestamp: new Date('2024-01-15T10:00:00Z').toISOString(),
-    likes: 5,
-    commentsCount: 3,
+    createdAt: createMockTimestamp(fiveDaysAgo),
+    likeCount: 5,
+    commentCount: 3,
     imageUrl: 'https://example.com/image.jpg',
   };
 
@@ -91,10 +107,11 @@ describe('PostCard Component', () => {
         thumbnailUrl: 'https://example.com/thumbnail.jpg',
       };
 
-      renderWithProviders(<PostCard post={videoPost} />, { user: mockUser });
+      const { container } = renderWithProviders(<PostCard post={videoPost} />, { user: mockUser });
 
-      const video = screen.getByRole('application'); // video element with controls
+      const video = container.querySelector('video');
       expect(video).toBeInTheDocument();
+      expect(video).toHaveAttribute('poster', 'https://example.com/thumbnail.jpg');
     });
 
     it('should render like count and comment count', () => {
@@ -143,7 +160,7 @@ describe('PostCard Component', () => {
 
       renderWithProviders(<PostCard post={mockPost} />, { user: mockUser });
 
-      const likeButton = screen.getAllByRole('button')[1]; // Second button is like
+      const likeButton = screen.getByRole('button', { name: 'Like post' });
       await user.click(likeButton);
 
       await waitFor(() => {
@@ -158,7 +175,7 @@ describe('PostCard Component', () => {
 
       renderWithProviders(<PostCard post={mockPost} />, { user: mockUser });
 
-      const likeButton = screen.getAllByRole('button')[1];
+      const likeButton = screen.getByRole('button', { name: 'Like post' });
       await user.click(likeButton);
 
       // Like count should increase from 5 to 6
@@ -173,7 +190,7 @@ describe('PostCard Component', () => {
       renderWithProviders(<PostCard post={mockPost} />, { user: mockUser });
 
       await waitFor(() => {
-        const likeButton = screen.getAllByRole('button')[1];
+        const likeButton = screen.getByRole('button', { name: 'Like post' });
         expect(likeButton).toHaveClass('text-red-500');
       });
     });
@@ -184,7 +201,7 @@ describe('PostCard Component', () => {
 
       renderWithProviders(<PostCard post={mockPost} />, { user: mockUser });
 
-      const likeButton = screen.getAllByRole('button')[1];
+      const likeButton = screen.getByRole('button', { name: 'Like post' });
       const initialCount = screen.getByText('5');
       expect(initialCount).toBeInTheDocument();
 
@@ -206,7 +223,7 @@ describe('PostCard Component', () => {
 
       renderWithProviders(<PostCard post={mockPost} />, { user: null });
 
-      const likeButton = screen.getAllByRole('button')[1];
+      const likeButton = screen.getByRole('button', { name: 'Like post' });
       await user.click(likeButton);
 
       expect(mockToggleLike).not.toHaveBeenCalled();
@@ -261,7 +278,7 @@ describe('PostCard Component', () => {
 
       renderWithProviders(<PostCard post={mockPost} />, { user: mockUser });
 
-      const commentButton = screen.getAllByRole('button')[2]; // Third button is comment
+      const commentButton = screen.getByRole('button', { name: 'Comment on post' });
       await user.click(commentButton);
 
       await waitFor(() => {
@@ -277,7 +294,7 @@ describe('PostCard Component', () => {
       renderWithProviders(<PostCard post={mockPost} />, { user: mockUser });
 
       // Open comment dialog
-      const commentButton = screen.getAllByRole('button')[2];
+      const commentButton = screen.getByRole('button', { name: 'Comment on post' });
       await user.click(commentButton);
 
       await waitFor(() => {
@@ -310,7 +327,7 @@ describe('PostCard Component', () => {
       renderWithProviders(<PostCard post={mockPost} />, { user: mockUser });
 
       // Open comment dialog
-      const commentButton = screen.getAllByRole('button')[2];
+      const commentButton = screen.getByRole('button', { name: 'Comment on post' });
       await user.click(commentButton);
 
       await waitFor(() => {
@@ -329,7 +346,7 @@ describe('PostCard Component', () => {
       renderWithProviders(<PostCard post={mockPost} />, { user: mockUser });
 
       // Open dialog and type comment
-      const commentButton = screen.getAllByRole('button')[2];
+      const commentButton = screen.getByRole('button', { name: 'Comment on post' });
       await user.click(commentButton);
 
       await waitFor(() => {
@@ -403,7 +420,8 @@ describe('PostCard Component', () => {
       renderWithProviders(<PostCard post={mockPost} />, { user: mockUser });
 
       // All interactive elements should be accessible
-      expect(screen.getByRole('img', { name: 'John Doe' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Like post' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Comment on post' })).toBeInTheDocument();
       expect(screen.getByAltText('Post image')).toBeInTheDocument();
     });
 
@@ -412,12 +430,8 @@ describe('PostCard Component', () => {
 
       renderWithProviders(<PostCard post={mockPost} />, { user: mockUser });
 
-      // Tab through interactive elements
-      await user.tab();
-      await user.tab();
-
       // Should be able to activate like button with Enter
-      const likeButton = screen.getAllByRole('button')[1];
+      const likeButton = screen.getByRole('button', { name: 'Like post' });
       likeButton.focus();
       await user.keyboard('{Enter}');
 

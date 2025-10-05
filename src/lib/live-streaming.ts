@@ -72,6 +72,8 @@ export async function createLiveStream(streamerData: {
   category: LiveStream['category'];
   tags?: string[];
 }) {
+  const { streamsCol } = getCollections();
+
   const stream: Omit<LiveStream, 'id'> = {
     title: streamData.title,
     description: streamData.description,
@@ -90,6 +92,7 @@ export async function createLiveStream(streamerData: {
 }
 
 export async function startLiveStream(streamId: string) {
+  const { streamsCol } = getCollections();
   await updateDoc(doc(streamsCol, streamId), {
     isLive: true,
     startedAt: serverTimestamp(),
@@ -97,6 +100,7 @@ export async function startLiveStream(streamId: string) {
 }
 
 export async function endLiveStream(streamId: string) {
+  const { streamsCol } = getCollections();
   await updateDoc(doc(streamsCol, streamId), {
     isLive: false,
     endedAt: serverTimestamp(),
@@ -104,6 +108,7 @@ export async function endLiveStream(streamId: string) {
 }
 
 export async function updateViewerCount(streamId: string, count: number) {
+  const { streamsCol } = getCollections();
   await updateDoc(doc(streamsCol, streamId), {
     viewerCount: count,
   });
@@ -139,6 +144,7 @@ export async function getAllStreams(pageSize = 20) {
 }
 
 export function subscribeToStream(streamId: string, onUpdate: (stream: LiveStream & { id: string }) => void) {
+  const { streamsCol } = getCollections();
   const streamRef = doc(streamsCol, streamId);
   return onSnapshot(streamRef, (doc) => {
     if (doc.exists()) {
@@ -149,6 +155,8 @@ export function subscribeToStream(streamId: string, onUpdate: (stream: LiveStrea
 
 // Viewer management
 export async function joinStream(streamId: string, userId: string) {
+  const { streamViewersCol } = getCollections();
+
   // Check if already viewing
   const existing = await getDocs(
     query(streamViewersCol, where('streamId', '==', streamId), where('userId', '==', userId))
@@ -168,6 +176,8 @@ export async function joinStream(streamId: string, userId: string) {
 }
 
 export async function leaveStream(streamId: string, userId: string) {
+  const { streamViewersCol } = getCollections();
+
   const q = query(
     streamViewersCol,
     where('streamId', '==', streamId),
@@ -185,11 +195,13 @@ export async function leaveStream(streamId: string, userId: string) {
 
 // Stream chat
 export async function sendStreamMessage(
-  streamId: string, 
-  user: { uid: string; displayName: string; photoURL?: string }, 
+  streamId: string,
+  user: { uid: string; displayName: string; photoURL?: string },
   message: string,
   type: StreamMessage['type'] = 'message'
 ) {
+  const { streamMessagesCol } = getCollections();
+
   const messageData: Omit<StreamMessage, 'id'> = {
     streamId,
     userId: user.uid,
@@ -204,10 +216,12 @@ export async function sendStreamMessage(
 }
 
 export function subscribeToStreamMessages(
-  streamId: string, 
+  streamId: string,
   onUpdate: (messages: (StreamMessage & { id: string })[]) => void,
   messageLimit = 50
 ) {
+  const { streamMessagesCol } = getCollections();
+
   const q = query(
     streamMessagesCol,
     where('streamId', '==', streamId),
