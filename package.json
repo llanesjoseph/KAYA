@@ -10,6 +10,9 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "security-scan": "./scripts/security-scan.sh",
     "precommit": "npm run security-scan",
     "setup:firebase": "node scripts/setup-firebase.js",
@@ -65,15 +68,22 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "firebase-admin": "^13.0.1",
     "genkit-cli": "^1.15.2",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
     "null-loader": "^4.0.1",
     "postcss": "^8",
     "pre-commit": "^1.2.2",
     "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typescript": "^5"
   }

@@ -1,21 +1,62 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { z } from 'zod';
+
+// Validation schema for bug reports
+const BugReportSchema = z.object({
+  description: z.string().min(10, 'Description must be at least 10 characters').max(5000, 'Description too long'),
+  email: z.string().email('Invalid email address'),
+  userName: z.string().min(1).max(100, 'Name too long'),
+  userId: z.string().min(1),
+  consoleLogs: z.string().max(50000, 'Console logs too large'),
+  browserInfo: z.object({
+    userAgent: z.string(),
+    platform: z.string(),
+    language: z.string(),
+    screenResolution: z.string(),
+    viewport: z.string(),
+    url: z.string().url('Invalid URL'),
+  }),
+});
+
+// Sanitize HTML to prevent XSS attacks
+function sanitizeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// TODO: Implement rate limiting - consider using a library like 'rate-limiter-flexible'
+// or Next.js middleware to prevent abuse (e.g., max 5 bug reports per hour per IP)
 
 export async function POST(req: NextRequest) {
-  // Initialize Resend inside the function to avoid build-time errors
+  // Initialize Resend at runtime to avoid build-time errors
   const resend = new Resend(process.env.RESEND_API_KEY);
+
   try {
+    // Parse and validate request body
     const body = await req.json();
-    const { description, email, userName, userId, consoleLogs, browserInfo } = body;
+    const validatedData = BugReportSchema.parse(body);
 
-    if (!description) {
-      return NextResponse.json(
-        { error: 'Description is required' },
-        { status: 400 }
-      );
-    }
+    // Sanitize all user-provided text for HTML injection
+    const sanitizedDescription = sanitizeHtml(validatedData.description);
+    const sanitizedUserName = sanitizeHtml(validatedData.userName);
+    const sanitizedEmail = sanitizeHtml(validatedData.email);
+    const sanitizedUserId = sanitizeHtml(validatedData.userId);
+    const sanitizedConsoleLogs = sanitizeHtml(validatedData.consoleLogs);
+    const sanitizedBrowserInfo = {
+      userAgent: sanitizeHtml(validatedData.browserInfo.userAgent),
+      platform: sanitizeHtml(validatedData.browserInfo.platform),
+      language: sanitizeHtml(validatedData.browserInfo.language),
+      screenResolution: sanitizeHtml(validatedData.browserInfo.screenResolution),
+      viewport: sanitizeHtml(validatedData.browserInfo.viewport),
+      url: sanitizeHtml(validatedData.browserInfo.url),
+    };
 
-    // Format the bug report email
+    // Build email HTML with sanitized data
     const emailHtml = `
       <!DOCTYPE html>
       <html>
@@ -94,23 +135,23 @@ export async function POST(req: NextRequest) {
           <div class="content">
             <div class="section">
               <h3>🔴 Bug Description</h3>
-              <p style="white-space: pre-wrap;">${description}</p>
+              <p style="white-space: pre-wrap;">${sanitizedDescription}</p>
             </div>
 
             <div class="section">
               <h3>👤 Reporter Information</h3>
               <div class="info-grid">
                 <span class="info-label">Name:</span>
-                <span>${userName}</span>
+                <span>${sanitizedUserName}</span>
 
                 <span class="info-label">Email:</span>
-                <span>${email}</span>
+                <span>${sanitizedEmail}</span>
 
                 <span class="info-label">User ID:</span>
-                <span>${userId}</span>
+                <span>${sanitizedUserId}</span>
 
                 <span class="info-label">Page URL:</span>
-                <span>${browserInfo.url}</span>
+                <span>${sanitizedBrowserInfo.url}</span>
               </div>
             </div>
 
@@ -118,25 +159,25 @@ export async function POST(req: NextRequest) {
               <h3>💻 Browser & Device Information</h3>
               <div class="info-grid">
                 <span class="info-label">User Agent:</span>
-                <span style="word-break: break-all;">${browserInfo.userAgent}</span>
+                <span style="word-break: break-all;">${sanitizedBrowserInfo.userAgent}</span>
 
                 <span class="info-label">Platform:</span>
-                <span>${browserInfo.platform}</span>
+                <span>${sanitizedBrowserInfo.platform}</span>
 
                 <span class="info-label">Language:</span>
-                <span>${browserInfo.language}</span>
+                <span>${sanitizedBrowserInfo.language}</span>
 
                 <span class="info-label">Screen:</span>
-                <span>${browserInfo.screenResolution}</span>
+                <span>${sanitizedBrowserInfo.screenResolution}</span>
 
                 <span class="info-label">Viewport:</span>
-                <span>${browserInfo.viewport}</span>
+                <span>${sanitizedBrowserInfo.viewport}</span>
               </div>
             </div>
 
             <div class="section">
               <h3>📋 Console Logs (Last 100 entries)</h3>
-              <div class="console-logs">${consoleLogs || 'No logs available'}</div>
+              <div class="console-logs">${sanitizedConsoleLogs || 'No logs available'}</div>
             </div>
 
             <div style="text-align: center; margin-top: 30px; padding-top: 30px; border-top: 2px solid #e5e7eb;">
@@ -149,20 +190,29 @@ export async function POST(req: NextRequest) {
       </html>
     `;
 
-    // Send email via Resend using bugs.crucibleanalytics.dev domain
+    // Send email via Resend
     const data = await resend.emails.send({
       from: 'KAYA Bug Reporter <bugs@bugs.crucibleanalytics.dev>',
-      to: ['llanes.joseph.m@gmail.com'],
-      replyTo: email,
-      subject: `🐛 Bug Report: ${description.substring(0, 50)}${description.length > 50 ? '...' : ''}`,
+      to: [process.env.BUG_REPORT_EMAIL || 'llanes.joseph.m@gmail.com'],
+      replyTo: validatedData.email,
+      subject: `🐛 Bug Report: ${sanitizedDescription.substring(0, 50)}${sanitizedDescription.length > 50 ? '...' : ''}`,
       html: emailHtml,
     });
 
     return NextResponse.json({ success: true, data });
-  } catch (error: any) {
-    console.error('Failed to send bug report:', error);
+  } catch (error) {
+    // Handle Zod validation errors
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.errors },
+        { status: 400 }
+      );
+    }
+
+    // Handle other errors without exposing sensitive details
+    console.error('Bug report error:', error);
     return NextResponse.json(
-      { error: 'Failed to send bug report', details: error.message },
+      { error: 'Failed to send bug report' },
       { status: 500 }
     );
   }

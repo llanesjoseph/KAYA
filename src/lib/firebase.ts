@@ -5,23 +5,29 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
+// Conditional logging - only log in development
+const isDev = process.env.NODE_ENV === 'development';
+const logInfo = (...args: any[]) => isDev && console.log(...args);
+const logWarn = (...args: any[]) => isDev && console.warn(...args);
+const logError = (...args: any[]) => console.error(...args); // Always log errors
+
 // Firebase configuration - supports both local env vars and Firebase App Hosting auto-config
 const getFirebaseConfig = () => {
   // Try to get config from Firebase App Hosting environment first
   if (typeof window !== 'undefined' && (window as any).FIREBASE_WEBAPP_CONFIG) {
     try {
       const config = JSON.parse((window as any).FIREBASE_WEBAPP_CONFIG);
-      console.log('Using Firebase App Hosting config:', Object.keys(config));
+      logInfo('Using Firebase App Hosting config:', Object.keys(config));
       return config;
     } catch (e) {
-      console.warn('Failed to parse FIREBASE_WEBAPP_CONFIG:', e);
+      logWarn('Failed to parse FIREBASE_WEBAPP_CONFIG:', e);
     }
   }
 
   // Check for Firebase App Hosting environment variables that might be injected differently
   if (typeof window !== 'undefined') {
-    console.log('Checking for Firebase App Hosting environment...');
-    console.log('window.FIREBASE_WEBAPP_CONFIG exists:', !!(window as any).FIREBASE_WEBAPP_CONFIG);
+    logInfo('Checking for Firebase App Hosting environment...');
+    logInfo('window.FIREBASE_WEBAPP_CONFIG exists:', !!(window as any).FIREBASE_WEBAPP_CONFIG);
 
     // Try different possible Firebase App Hosting injection methods
     const possibleConfigs = [
@@ -32,7 +38,7 @@ const getFirebaseConfig = () => {
 
     for (let i = 0; i < possibleConfigs.length; i++) {
       if (possibleConfigs[i]) {
-        console.log(`Found Firebase config via method ${i + 1}:`, Object.keys(possibleConfigs[i]));
+        logInfo(`Found Firebase config via method ${i + 1}:`, Object.keys(possibleConfigs[i]));
         return possibleConfigs[i];
       }
     }
@@ -51,7 +57,7 @@ const getFirebaseConfig = () => {
 
   // Log environment variable status for debugging
   if (typeof window !== 'undefined') {
-    console.log('Environment variables status:', {
+    logInfo('Environment variables status:', {
       NODE_ENV: process.env.NODE_ENV,
       hostname: window.location.hostname,
       hasApiKey: !!config.apiKey,
@@ -60,7 +66,7 @@ const getFirebaseConfig = () => {
       hasAppId: !!config.appId
     });
 
-    console.log('Using environment variables for Firebase config', {
+    logInfo('Using environment variables for Firebase config', {
       hasApiKey: !!config.apiKey,
       hasProjectId: !!config.projectId,
       hasAuthDomain: !!config.authDomain,
@@ -79,8 +85,8 @@ const getFirebaseConfig = () => {
     if (!config.appId) missingFields.push('appId');
 
     if (missingFields.length > 0) {
-      console.error('Missing Firebase config fields:', missingFields);
-      console.error('Available environment variables:', {
+      logError('Missing Firebase config fields:', missingFields);
+      logError('Available environment variables:', {
         NEXT_PUBLIC_FIREBASE_API_KEY: !!process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
         NEXT_PUBLIC_FIREBASE_PROJECT_ID: !!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
         NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: !!process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -110,7 +116,7 @@ const initializeFirebase = () => {
   const hasValidConfig = firebaseConfig.apiKey && firebaseConfig.apiKey !== '' && firebaseConfig.projectId && firebaseConfig.projectId !== '';
 
   if (typeof window !== 'undefined') {
-    console.log('Attempting Firebase initialization', {
+    logInfo('Attempting Firebase initialization', {
       hasValidConfig,
       isBuildTime,
       isStaticGeneration,
@@ -127,10 +133,10 @@ const initializeFirebase = () => {
       analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
 
       if (typeof window !== 'undefined') {
-        console.log('Firebase initialized successfully');
+        logInfo('Firebase initialized successfully');
       }
     } catch (error) {
-      console.warn('Firebase initialization failed:', error);
+      logWarn('Firebase initialization failed:', error);
       // Reset to null on error
       app = null;
       db = null;
@@ -139,7 +145,7 @@ const initializeFirebase = () => {
       analytics = null;
     }
   } else if (typeof window !== 'undefined') {
-    console.warn('Firebase initialization skipped', {
+    logWarn('Firebase initialization skipped', {
       hasValidConfig,
       isBuildTime,
       isStaticGeneration
@@ -155,34 +161,34 @@ if (typeof window === 'undefined') {
   const hasValidConfig = firebaseConfig.apiKey && firebaseConfig.apiKey !== '' && firebaseConfig.projectId && firebaseConfig.projectId !== '';
 
   if (hasValidConfig) {
-    console.log('Firebase config available immediately, initializing...');
+    logInfo('Firebase config available immediately, initializing...');
     initializeFirebase();
   } else {
-    console.log('Firebase config not immediately available, trying alternative methods...');
+    logInfo('Firebase config not immediately available, trying alternative methods...');
 
     // Check for Firebase App Hosting config injection
     if ((window as any).FIREBASE_WEBAPP_CONFIG) {
-      console.log('Found FIREBASE_WEBAPP_CONFIG, reinitializing...');
+      logInfo('Found FIREBASE_WEBAPP_CONFIG, reinitializing...');
       firebaseConfig = getFirebaseConfig();
       initializeFirebase();
     } else {
-      console.log('Waiting for Firebase App Hosting config injection...');
+      logInfo('Waiting for Firebase App Hosting config injection...');
 
       // Multiple retry attempts with different delays
       const retryInitialization = (attempt: number) => {
-        console.log(`Firebase initialization attempt ${attempt}`);
+        logInfo(`Firebase initialization attempt ${attempt}`);
 
         firebaseConfig = getFirebaseConfig();
         const hasUpdatedConfig = firebaseConfig.apiKey && firebaseConfig.apiKey !== '' && firebaseConfig.projectId && firebaseConfig.projectId !== '';
 
         if (hasUpdatedConfig) {
-          console.log('Firebase config found on attempt', attempt);
+          logInfo('Firebase config found on attempt', attempt);
           initializeFirebase();
         } else if (attempt < 5) {
           // Try again with increasing delay
           setTimeout(() => retryInitialization(attempt + 1), attempt * 200);
         } else {
-          console.error('Firebase initialization failed after 5 attempts');
+          logError('Firebase initialization failed after 5 attempts');
         }
       };
 
