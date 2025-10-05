@@ -18,7 +18,20 @@
       "Bash(if [ ! -d \"data\" ])",
       "Bash(then mkdir data)",
       "Bash(fi)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(npm audit:*)",
+      "Bash(git log:*)",
+      "Bash(npm ls:*)",
+      "Bash(awk:*)",
+      "Bash(find:*)",
+      "Bash(findstr:*)",
+      "Bash(npm outdated)",
+      "Bash(cat:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm test:*)",
+      "Bash(if exist nul del /f nul)",
+      "Bash(git restore:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
